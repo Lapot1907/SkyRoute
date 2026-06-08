@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkyRoute</title>
+<style>
+body{
+  margin:0;
+  background:#050505;
+  color:white;
+  font-family:Arial, sans-serif;
+}
+.app{
+  max-width:430px;
+  min-height:100vh;
+  margin:auto;
+  padding:18px;
+  background:linear-gradient(#2d3331,#111);
+}
+h1{text-align:center;color:#ffd23c}
+.card{
+  background:#111;
+  border:1px solid #444;
+  border-radius:16px;
+  padding:14px;
+  margin:12px 0;
+  box-shadow:inset 0 0 12px #000;
+}
+.gauge{
+  width:190px;
+  height:190px;
+  border-radius:50%;
+  margin:20px auto;
+  background:radial-gradient(circle,#111 45%,#333 47%,#000 70%);
+  border:6px solid #555;
+  position:relative;
+}
+.gauge:before{
+  content:"";
+  position:absolute;
+  width:4px;
+  height:70px;
+  background:white;
+  left:50%;
+  top:25px;
+  transform:translateX(-50%) rotate(35deg);
+  transform-origin:bottom;
+}
+.gauge:after{
+  content:"";
+  position:absolute;
+  width:16px;
+  height:16px;
+  background:white;
+  border-radius:50%;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+}
+.value{
+  position:absolute;
+  bottom:35px;
+  width:100%;
+  text-align:center;
+  color:#7CFF4E;
+  font-size:24px;
+}
+.map{
+  height:260px;
+  border-radius:14px;
+  background:radial-gradient(circle at 40% 40%,#18394b,#071015);
+  position:relative;
+  overflow:hidden;
+  border:1px solid #555;
+}
+.route{
+  position:absolute;
+  width:260px;
+  height:4px;
+  background:#39ff4a;
+  left:65px;
+  top:145px;
+  transform:rotate(28deg);
+  box-shadow:0 0 15px #39ff4a;
+}
+.plane{
+  position:absolute;
+  font-size:34px;
+  left:175px;
+  top:120px;
+  transform:rotate(30deg);
+}
+.city{
+  position:absolute;
+  font-size:13px;
+}
+button{
+  width:100%;
+  padding:14px;
+  border:0;
+  border-radius:12px;
+  background:#ffd23c;
+  font-size:17px;
+  font-weight:bold;
+  margin-top:10px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.green{color:#7CFF4E}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <h1>SkyRoute</h1>
+
+  <div class="card">
+    <b>FLIGHT</b><br>
+    London ✈ Istanbul
+  </div>
+
+  <div class="gauge">
+    <div class="value" id="speed">842 km/h</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">Altitude<br><span class="green" id="alt">36,000 ft</span></div>
+    <div class="card">Heading<br><span class="green" id="head">089°</span></div>
+  </div>
+
+  <div class="map">
+    <div class="city" style="left:30px;top:170px">London</div>
+    <div class="city" style="right:35px;top:80px">Istanbul</div>
+    <div class="route"></div>
+    <div class="plane">✈</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">Time<br><span class="green" id="clock"></span></div>
+    <div class="card">GPS<br><span class="green" id="gps">Demo Mode</span></div>
+  </div>
+
+  <button onclick="startGPS()">START LIVE GPS</button>
+  <button onclick="demo()">DEMO FLIGHT</button>
+</div>
+
+<script>
+function clock(){
+  let d=new Date();
+  document.getElementById("clock").innerText =
+    d.getHours().toString().padStart(2,"0")+":"+
+    d.getMinutes().toString().padStart(2,"0");
+}
+clock();
+setInterval(clock,1000);
+
+function demo(){
+  document.getElementById("speed").innerText="842 km/h";
+  document.getElementById("alt").innerText="36,000 ft";
+  document.getElementById("head").innerText="089°";
+  document.getElementById("gps").innerText="Demo Active";
+}
+
+function startGPS(){
+  if(!navigator.geolocation){
+    alert("GPS not supported");
+    return;
+  }
+
+  navigator.geolocation.watchPosition(pos=>{
+    let speed = pos.coords.speed ? Math.round(pos.coords.speed*3.6) : 0;
+    let alt = pos.coords.altitude ? Math.round(pos.coords.altitude*3.28) : 0;
+    let head = pos.coords.heading ? Math.round(pos.coords.heading) : 0;
+
+    document.getElementById("speed").innerText = speed+" km/h";
+    document.getElementById("alt").innerText = alt+" ft";
+    document.getElementById("head").innerText = head+"°";
+    document.getElementById("gps").innerText = "LIVE";
+  }, err=>{
+    alert("GPS permission needed");
+  }, {
+    enableHighAccuracy:true,
+    maximumAge:0,
+    timeout:10000
+  });
+}
+</script>
+
+</body>
+</html> no
