@@ -2,324 +2,337 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SkyRoute</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
+*{box-sizing:border-box;margin:0;padding:0}
 body{
-background:#0b0d10;
-font-family:Arial,sans-serif;
-color:white;
+  background:#000;
+  color:#fff;
+  font-family:Arial,sans-serif;
 }
-
-.app{
-max-width:430px;
-margin:auto;
-min-height:100vh;
-padding:15px;
-background:linear-gradient(#20282c,#0b0d10);
+.phone{
+  max-width:430px;
+  min-height:100vh;
+  margin:auto;
+  padding:12px;
+  background:#111;
 }
-
-.title{
-text-align:center;
-font-size:32px;
-font-weight:bold;
-color:#ffd700;
-margin-bottom:15px;
+.panel{
+  background:linear-gradient(#202522,#0b0d0c);
+  border:4px solid #333;
+  border-radius:34px;
+  padding:16px 10px;
+  box-shadow:inset 0 0 25px #000;
 }
-
-.card{
-background:#111;
-border:1px solid #333;
-border-radius:15px;
-padding:12px;
-margin-bottom:12px;
-box-shadow:0 0 10px rgba(0,0,0,.4);
+.notch{
+  width:150px;
+  height:34px;
+  background:#000;
+  border-radius:22px;
+  margin:0 auto 12px;
 }
-
-.flight{
-text-align:center;
-font-size:22px;
+.grid-top{
+  display:grid;
+  grid-template-columns:1fr 1.2fr 1fr;
+  gap:8px;
 }
-
-.map{
-height:320px;
-border-radius:20px;
-position:relative;
-overflow:hidden;
-background:
-radial-gradient(circle at 50% 50%,#1f4960,#08131a);
-border:2px solid #333;
+.box{
+  background:#050505;
+  border:1px solid #333;
+  border-radius:8px;
+  padding:8px;
+  font-size:12px;
+  box-shadow:inset 0 0 10px #000;
 }
-
-.city{
-position:absolute;
-font-size:14px;
-font-weight:bold;
-}
-
-.london{
-left:25px;
-bottom:60px;
-}
-
-.istanbul{
-right:25px;
-top:70px;
-}
-
-.route{
-position:absolute;
-height:4px;
-width:280px;
-background:#32ff5f;
-left:55px;
-top:170px;
-transform:rotate(-22deg);
-box-shadow:
-0 0 8px #32ff5f,
-0 0 15px #32ff5f;
-}
-
-.plane{
-position:absolute;
-font-size:34px;
-left:140px;
-top:145px;
-animation:fly 10s linear infinite;
-}
-
-@keyframes fly{
-0%{
-left:55px;
-top:220px;
-}
-100%{
-left:285px;
-top:120px;
-}
-}
+.green{color:#73ff35}
+.yellow{color:#ffd84a}
+.bigtext{font-size:20px;font-weight:bold}
 
 .gauge{
-height:180px;
-width:180px;
-margin:20px auto;
-border-radius:50%;
-border:6px solid #444;
-background:
-radial-gradient(circle,#111 45%,#222 47%,#000 70%);
-position:relative;
+  width:112px;
+  height:112px;
+  border-radius:50%;
+  background:radial-gradient(circle,#111 45%,#222 48%,#000 70%);
+  border:5px solid #333;
+  position:relative;
+  margin:8px auto;
+  box-shadow:0 0 8px #000,inset 0 0 15px #000;
+}
+.gauge:before{
+  content:"";
+  position:absolute;
+  width:3px;
+  height:42px;
+  background:white;
+  left:50%;
+  top:20px;
+  transform-origin:bottom;
+  transform:translateX(-50%) rotate(60deg);
+}
+.gauge:after{
+  content:"";
+  position:absolute;
+  width:12px;
+  height:12px;
+  background:#ddd;
+  border-radius:50%;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+}
+.gauge-title{
+  position:absolute;
+  top:30px;
+  width:100%;
+  text-align:center;
+  font-size:10px;
+  color:#aaa;
+}
+.gauge-value{
+  position:absolute;
+  bottom:18px;
+  width:100%;
+  text-align:center;
+  color:#73ff35;
+  font-size:15px;
+  font-weight:bold;
+}
+.big-gauge{
+  width:180px;
+  height:180px;
+}
+.big-gauge .gauge-value{font-size:22px;bottom:30px}
+
+.horizon{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  margin:auto;
+  background:linear-gradient(#2478b7 0 50%,#6b3d17 50% 100%);
+  border:8px solid #222;
+  position:relative;
+  overflow:hidden;
+}
+.horizon:after{
+  content:"✈";
+  position:absolute;
+  font-size:34px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  color:white;
 }
 
-.needle{
-position:absolute;
-width:4px;
-height:70px;
-background:white;
-left:50%;
-top:25px;
-transform-origin:bottom center;
-transform:translateX(-50%) rotate(35deg);
+.main{
+  display:grid;
+  grid-template-columns:1fr 1.5fr 1fr;
+  gap:8px;
+  margin-top:8px;
 }
-
 .center{
-position:absolute;
-width:16px;
-height:16px;
-border-radius:50%;
-background:white;
-left:50%;
-top:50%;
-transform:translate(-50%,-50%);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
-
-.speed{
-position:absolute;
-bottom:35px;
-width:100%;
-text-align:center;
-font-size:24px;
-color:#42ff42;
-font-weight:bold;
+.map{
+  height:240px;
+  background:radial-gradient(circle at 40% 40%,#17394b,#061116);
+  border:1px solid #444;
+  border-radius:8px;
+  position:relative;
+  overflow:hidden;
 }
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
+.map-title{
+  text-align:center;
+  padding:6px;
+  font-size:12px;
 }
-
-.info{
-text-align:center;
-font-size:20px;
-color:#42ff42;
-margin-top:5px;
+.city{
+  position:absolute;
+  font-size:11px;
 }
-
+.route{
+  position:absolute;
+  width:190px;
+  height:3px;
+  background:#58ff3d;
+  left:25px;
+  top:150px;
+  transform:rotate(32deg);
+  box-shadow:0 0 10px #58ff3d;
+}
+.plane{
+  position:absolute;
+  left:110px;
+  top:138px;
+  font-size:26px;
+  transform:rotate(35deg);
+}
+.data-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+.data{
+  background:#050505;
+  padding:8px;
+  border:1px solid #333;
+  text-align:center;
+  font-size:11px;
+}
+.bottom-card{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  margin-top:8px;
+}
+.nav{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:7px;
+  margin-top:10px;
+}
 .btn{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
-background:#ffd700;
-font-size:18px;
-font-weight:bold;
-margin-top:10px;
-cursor:pointer;
+  background:#111;
+  border:1px solid #333;
+  border-radius:12px;
+  text-align:center;
+  padding:9px 4px;
+  box-shadow:inset 0 0 10px #000;
 }
-
+.btn span{font-size:24px;display:block}
+.btn small{font-size:10px;color:#ccc}
 .footer{
-margin-top:15px;
-padding:10px;
-border:1px solid #555;
-border-radius:12px;
-text-align:center;
-color:#ffd700;
+  margin:12px auto 0;
+  text-align:center;
+  color:#ffd84a;
+  border:1px solid #6b5200;
+  padding:9px;
+  width:75%;
+  border-radius:6px;
+  font-size:13px;
 }
 </style>
 </head>
 
 <body>
+<div class="phone">
+<div class="panel">
 
-<div class="app">
+<div class="notch"></div>
 
-<div class="title">SkyRoute</div>
+<div class="grid-top">
+  <div class="box">
+    <b>FLIGHT INFO</b><br><br>
+    <span class="bigtext">LHR ✈ IST</span><br>
+    London / Istanbul<br><br>
+    FLIGHT <span class="green">SR 1907</span><br>
+    ALTITUDE <span class="green" id="altText">36,000 ft</span><br>
+    TIME TO DEST <span class="green">02:18</span><br>
+    DISTANCE <span class="green">1,540 km</span>
+  </div>
 
-<div class="card flight">
-London ✈ Istanbul
+  <div class="horizon"></div>
+
+  <div class="box">
+    VHF 1<br><span class="bigtext">118.700</span><br>
+    <span class="green">ACTIVE</span><br><br>
+    VHF 2<br><span class="bigtext">124.850</span><br>
+    <span class="green">STANDBY</span><br><br>
+    GPS<br><span class="green" id="gps">STRONG</span>
+  </div>
 </div>
 
-<div class="gauge">
-<div class="needle"></div>
-<div class="center"></div>
-<div class="speed" id="speed">842 km/h</div>
-</div>
+<div class="main">
 
-<div class="grid">
+  <div>
+    <div class="gauge"><div class="gauge-title">AIRSPEED</div><div class="gauge-value" id="speed">842</div></div>
+    <div class="gauge"><div class="gauge-title">ALTITUDE</div><div class="gauge-value">36K</div></div>
+    <div class="gauge"><div class="gauge-title">OUTSIDE</div><div class="gauge-value">-20°C</div></div>
+    <div class="gauge"><div class="gauge-title">MACH</div><div class="gauge-value">0.82</div></div>
+  </div>
 
-<div class="card">
-Altitude
-<div class="info" id="altitude">36,000 ft</div>
-</div>
+  <div class="center">
+    <div class="gauge big-gauge">
+      <div class="gauge-title">HEADING</div>
+      <div class="gauge-value" id="heading">089°</div>
+    </div>
 
-<div class="card">
-Heading
-<div class="info" id="heading">089°</div>
-</div>
+    <div class="map">
+      <div class="map-title">YOU ARE HERE</div>
+      <div class="city" style="left:20px;bottom:70px">London</div>
+      <div class="city" style="right:20px;top:70px">Istanbul</div>
+      <div class="city" style="left:70px;top:120px">Europe</div>
+      <div class="route"></div>
+      <div class="plane">✈</div>
+    </div>
 
-</div>
+    <div class="data-row">
+      <div class="data">GROUND SPEED<br><span class="green" id="ground">842 km/h</span></div>
+      <div class="data">LOCAL TIME<br><span class="green" id="clock">18:08</span></div>
+    </div>
+  </div>
 
-<div class="map">
-
-<div class="city london">London</div>
-
-<div class="city istanbul">Istanbul</div>
-
-<div class="route"></div>
-
-<div class="plane">✈</div>
-
-</div>
-
-<div class="grid">
-
-<div class="card">
-Local Time
-<div class="info" id="clock"></div>
-</div>
-
-<div class="card">
-GPS Status
-<div class="info" id="gps">Demo</div>
-</div>
+  <div>
+    <div class="gauge"><div class="gauge-title">FUEL</div><div class="gauge-value">76%</div></div>
+    <div class="gauge"><div class="gauge-title">ENG N1</div><div class="gauge-value">68%</div></div>
+    <div class="gauge"><div class="gauge-title">CABIN ALT</div><div class="gauge-value">2400</div></div>
+    <div class="gauge"><div class="gauge-title">WIND</div><div class="gauge-value">22 KTS</div></div>
+  </div>
 
 </div>
 
-<button class="btn" onclick="startGPS()">
-START LIVE GPS
-</button>
-
-<div class="footer">
-Passenger Flight Tracker
+<div class="bottom-card">
+  <div class="data">🌤 WEATHER<br><span class="green">28°C</span><br>Few Clouds</div>
+  <div class="data">TURBULENCE<br><span class="green bigtext">LIGHT</span></div>
 </div>
 
+<div class="nav">
+  <div class="btn"><span>🏠</span><small>HOME</small></div>
+  <div class="btn"><span>🌍</span><small>MAP</small></div>
+  <div class="btn" onclick="startGPS()"><span>📡</span><small>GPS</small></div>
+  <div class="btn"><span>⚙️</span><small>SETTING</small></div>
+</div>
+
+<div class="footer">ENJOY YOUR FLIGHT</div>
+
+</div>
 </div>
 
 <script>
-
 function updateClock(){
-const now=new Date();
-
-document.getElementById("clock").innerHTML=
-now.getHours().toString().padStart(2,"0")
-+":"
-+
-now.getMinutes().toString().padStart(2,"0");
+  const d=new Date();
+  document.getElementById("clock").innerText =
+  d.getHours().toString().padStart(2,"0")+":"+
+  d.getMinutes().toString().padStart(2,"0");
 }
-
-setInterval(updateClock,1000);
 updateClock();
+setInterval(updateClock,1000);
 
 function startGPS(){
+  if(!navigator.geolocation){
+    alert("GPS not supported");
+    return;
+  }
 
-if(!navigator.geolocation){
-alert("GPS not supported");
-return;
+  navigator.geolocation.watchPosition(pos=>{
+    const sp = pos.coords.speed ? Math.round(pos.coords.speed*3.6) : 0;
+    const alt = pos.coords.altitude ? Math.round(pos.coords.altitude*3.28) : 0;
+    const hdg = pos.coords.heading ? Math.round(pos.coords.heading) : 0;
+
+    document.getElementById("speed").innerText = sp;
+    document.getElementById("ground").innerText = sp+" km/h";
+    document.getElementById("altText").innerText = alt+" ft";
+    document.getElementById("heading").innerText = hdg+"°";
+    document.getElementById("gps").innerText = "LIVE";
+  },()=>{
+    alert("Allow GPS permission");
+  },{
+    enableHighAccuracy:true,
+    maximumAge:0,
+    timeout:10000
+  });
 }
-
-navigator.geolocation.watchPosition(
-
-(pos)=>{
-
-const speed=
-pos.coords.speed
-?
-Math.round(pos.coords.speed*3.6)
-:
-0;
-
-const alt=
-pos.coords.altitude
-?
-Math.round(pos.coords.altitude*3.28)
-:
-0;
-
-const head=
-pos.coords.heading
-?
-Math.round(pos.coords.heading)
-:
-0;
-
-document.getElementById("speed").innerHTML=
-speed+" km/h";
-
-document.getElementById("altitude").innerHTML=
-alt+" ft";
-
-document.getElementById("heading").innerHTML=
-head+"°";
-
-document.getElementById("gps").innerHTML=
-"LIVE";
-
-},
-
-(err)=>{
-alert("Please allow GPS access");
-}
-
-);
-
-}
-
 </script>
 
 </body>
