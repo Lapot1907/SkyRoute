@@ -67,18 +67,24 @@ function formatDateInZone(date,tz){try{return new Intl.DateTimeFormat("en-GB",{w
 function dayDiffInZones(depUtc,arrUtc,fromTz,toTz){const d1=partsInZone(depUtc,fromTz),d2=partsInZone(arrUtc,toTz);const a=Date.UTC(d1.y,d1.m-1,d1.d),b=Date.UTC(d2.y,d2.m-1,d2.d);return Math.round((b-a)/86400000)}
 function dayMarker(diff){return diff>0?" +"+diff:diff<0?" "+diff:""}
 function estimatedBlockHours(distanceKm,from,to){
-  // Realistic passenger flight block-time estimate.
-  // Includes route deviation, climb/descent, taxi/approach allowance.
-  let routeFactor = distanceKm > 6500 ? 1.08 : distanceKm > 2500 ? 1.06 : 1.04;
-  let cruise = 820;
-  if(distanceKm < 900) cruise = 700;
-  else if(distanceKm < 1800) cruise = 760;
-  else if(distanceKm < 3500) cruise = 820;
-  else if(distanceKm < 6500) cruise = 850;
-  else cruise = 880;
-  let block = (distanceKm * routeFactor) / cruise + 0.45;
-  // Long-haul westbound flights usually take longer because of winds/routing.
-  if(distanceKm > 6500 && to.lon < from.lon) block += 0.15;
+  // Realistic passenger block-time estimate.
+  // This is NOT a live airline schedule; it estimates gate-to-gate flying time.
+  // Short European flights need extra climb/descent/taxi time.
+  // Long-haul westbound flights need extra time for Atlantic routing/winds.
+  let block;
+  if(distanceKm < 700){
+    block = distanceKm / 620 + 0.55;
+  }else if(distanceKm < 1500){
+    block = distanceKm / 720 + 0.55;
+  }else if(distanceKm < 3500){
+    block = distanceKm / 820 + 0.55;
+  }else if(distanceKm < 6500){
+    block = distanceKm / 850 + 0.75;
+  }else{
+    block = distanceKm / 870 + 1.25;
+    if(to.lon < from.lon) block += 0.25;  // westbound long-haul allowance
+    else block += 0.05;                   // eastbound long-haul allowance
+  }
   return block;
 }
 function scheduledDepartureUtc(from){const tz=airportTimeZone(from);const now=partsInZone(new Date(),tz);return localTimeToUtc(now.y,now.m,now.d,17,5,tz)}
