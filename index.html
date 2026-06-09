@@ -179,7 +179,7 @@ html,body{background:#000;color:var(--white);font-family:-apple-system,BlinkMacS
   <div class="card progressCard"><div><div class="progressTitle">FLIGHT PROGRESS</div><div class="percent" id="percent">42%</div><div class="barWrap"><div class="bar"><div class="fill" id="fill"></div><div class="barPlane" id="barPlane">✈</div></div></div><div class="codeRow"><span id="fromCode">LHR</span><span id="toCode">IST</span></div></div><div><div class="distanceTitle">DISTANCE REMAINING</div><div class="distance" id="remaining">1,167 km</div></div></div>
   <div class="stats"><div class="stat"><span class="ico">🧭</span><small>GROUND SPEED</small><b id="speed">842 km/h</b></div><div class="stat"><span class="ico" style="color:#44e45d">⛰️</span><small>ALTITUDE</small><b id="altitude">36,000 ft</b></div><div class="stat"><span class="ico" style="color:#795cff">🟣</span><small>HEADING</small><b id="heading">089°</b></div><div class="stat"><span class="ico" style="color:#ffae1a">🕘</span><small>ETA</small><b id="eta">02h 18m</b></div></div>
   <div class="details" id="flightInfoSection"><div class="panel"><h3>FLIGHT DETAILS</h3><div class="row"><span>Flight Number</span><b>SKR1907</b></div><div class="row"><span>Aircraft</span><b>Boeing 737-800</b></div><div class="row"><span>Departure Time</span><b id="depTime">5:05 PM</b></div><div class="row"><span>Estimated Arrival</span><b id="arrTime">20:23</b></div><div class="row"><span>Total Distance</span><b id="totalDistance">2,776 km</b></div><div class="row"><span>Airports Loaded</span><b>194</b></div><div class="circle">✈</div><div class="flightTime" id="flightTime">01h 12m</div><div style="text-align:center;color:#8fa3b8;font-size:12px" id="remainTime">Remaining 02h 18m</div></div>
-  <div class="panel routeInfo" id="routeInfoSection"><h3>ROUTE INFO</h3><div class="stop"><div class="pin">●</div><div><b id="routeFrom">London (LHR)</b><small id="routeFromSub">Heathrow Airport</small><small style="color:#55f24c">17:05</small></div></div><div style="border-left:2px dashed #6b7f91;height:38px;margin-left:9px;padding-left:10px">✈</div><div class="stop"><div class="pin">●</div><div><b id="routeTo">Istanbul (IST)</b><small id="routeToSub">Istanbul Airport</small><small style="color:#55f24c" id="routeArr">20:23</small></div></div></div></div>
+  <div class="panel routeInfo" id="routeInfoSection"><h3>ROUTE INFO</h3><div class="stop"><div class="pin">●</div><div><b id="routeFrom">London (LHR)</b><small id="routeFromSub">Heathrow Airport</small><small style="color:#55f24c" id="routeDep">17:05</small></div></div><div style="border-left:2px dashed #6b7f91;height:38px;margin-left:9px;padding-left:10px">✈</div><div class="stop"><div class="pin">●</div><div><b id="routeTo">Istanbul (IST)</b><small id="routeToSub">Istanbul Airport</small><small style="color:#55f24c" id="routeArr">20:23</small></div></div></div></div>
   <div id="weatherSection"></div><div id="settingsSection"></div><div class="card nav">
     <div class="navbtn active" onclick="goTab('mapSection',this)"><span>🌐</span>MAP</div>
     <div class="navbtn" onclick="openFlightInfo(this)"><span>ⓘ</span>FLIGHT INFO</div>
@@ -329,7 +329,9 @@ function saveDepartureTime(){
   if(!d||!t||!d.value||!t.value)return;
   const parts=d.value.split("-").map(Number), time=t.value.split(":").map(Number);
   localStorage.setItem("skyrouteDepartureLocal",JSON.stringify({y:parts[0],m:parts[1],d:parts[2],h:time[0],min:time[1]}));
+  document.activeElement.blur();
   drawRoute();
+  openFlightInfo(document.querySelector(".navbtn:nth-child(2)"));
 }
 function useNowDeparture(){
   const from=byCode(document.getElementById("fromAirport").value);
@@ -355,7 +357,6 @@ function iconHtml(html, cls){return L.divIcon({html:html,className:cls,iconSize:
 function labelHtml(text){return L.divIcon({html:`<div class="airportLabel">${text}</div>`,className:'',iconSize:[80,24],iconAnchor:[40,35]})}
 function drawRoute(){
  const from=byCode(document.getElementById("fromAirport").value),to=byCode(document.getElementById("toAirport").value);
- setDepartureInputs(from);
  document.getElementById("fromFlag").innerText=from.flag;document.getElementById("toFlag").innerText=to.flag;
  document.getElementById("fromName").innerText=`${from.n} (${from.c})`;document.getElementById("toName").innerText=`${to.n} (${to.c})`;
  document.getElementById("fromSub").innerText=from.a;document.getElementById("toSub").innerText=to.a;document.getElementById("fromCode").innerText=from.c;document.getElementById("toCode").innerText=to.c;
@@ -367,6 +368,7 @@ function drawRoute(){
  document.getElementById("eta").innerText=`${rh}h ${String(rm).padStart(2,"0")}m`;document.getElementById("remainTime").innerText=`Remaining ${String(rh).padStart(2,"0")}h ${String(rm).padStart(2,"0")}m`;document.getElementById("flightTime").innerText=`${String(dh).padStart(2,"0")}h ${String(dm).padStart(2,"0")}m`;
  const times=scheduledTimes(from,to,duration);
  document.getElementById("depTime").innerText=times.dep;
+ document.getElementById("routeDep").innerText=times.dep;
  document.getElementById("arrTime").innerText=times.arr;
  document.getElementById("routeArr").innerText=times.arr;
  document.getElementById("routeFromSub").innerText=from.a+" • "+times.depDate;
@@ -419,6 +421,8 @@ function updateFlightInfoModal(from,to,totalKm,remainingKm,durationH,remainH,tim
 function openFlightInfo(el){
   document.querySelectorAll(".navbtn").forEach(b=>b.classList.remove("active"));
   if(el) el.classList.add("active");
+  const from=byCode(document.getElementById("fromAirport").value);
+  setDepartureInputs(from);
   document.getElementById("flightModal").classList.add("show");
 }
 function closeFlightInfo(){
