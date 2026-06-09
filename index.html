@@ -191,9 +191,17 @@ html,body{background:#000;color:var(--white);font-family:-apple-system,BlinkMacS
           <small>DISTANCE MILES</small>
           <b id="modalDistanceMiles">4,988 mi</b>
         </div>
+        <div class="infoTile">
+          <small>TIME DIFFERENCE</small>
+          <b id="modalTimeDiff">JFK is 7h behind</b>
+        </div>
+        <div class="infoTile">
+          <small>TIME SHOWN AS</small>
+          <b id="modalLocalNote">Local airport time</b>
+        </div>
         <div class="infoTile full">
           <small>LOCAL TIME NOTE</small>
-          <b id="modalNote">Departure and arrival are shown in local airport time.</b>
+          <b id="modalNote">Arrival can look only a few clock-hours later because the flight crosses time zones.</b>
         </div>
       </div>
     </div>
@@ -281,23 +289,38 @@ function goTab(sectionId,el){
   if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
+function utcOffsetHours(date,tz){
+  try{
+    const p=partsInZone(date,tz);
+    const shownAsUtc=Date.UTC(p.y,p.m-1,p.d,p.h,p.min);
+    return Math.round((shownAsUtc-date.getTime())/3600000);
+  }catch(e){return 0}
+}
 function updateFlightInfoModal(from,to,totalKm,remainingKm,durationH,remainH,times){
   const miles=Math.round(totalKm*0.621371);
+  const depUtc=scheduledDepartureUtc(from);
+  const arrUtc=new Date(depUtc.getTime()+durationH*3600*1000);
+  const fromTz=airportTimeZone(from), toTz=airportTimeZone(to);
+  const diff=utcOffsetHours(arrUtc,toTz)-utcOffsetHours(depUtc,fromTz);
+  const abs=Math.abs(diff);
+  const diffText = diff===0 ? "Same time zone" : `${to.c} is ${abs}h ${diff<0?"behind":"ahead"}`;
   document.getElementById("modalFromFlag").innerText=from.flag;
   document.getElementById("modalToFlag").innerText=to.flag;
   document.getElementById("modalFrom").innerText=`${from.n} (${from.c})`;
   document.getElementById("modalTo").innerText=`${to.n} (${to.c})`;
   document.getElementById("modalFromAirport").innerText=from.a;
   document.getElementById("modalToAirport").innerText=to.a;
-  document.getElementById("modalDeparture").innerText=times.dep;
-  document.getElementById("modalArrival").innerText=times.arr;
+  document.getElementById("modalDeparture").innerText=times.dep.replace(from.c,"Local");
+  document.getElementById("modalArrival").innerText=times.arr.replace(to.c,"Local");
   document.getElementById("modalDepartureDate").innerText=times.depDate;
   document.getElementById("modalArrivalDate").innerText=times.arrDate;
   document.getElementById("modalFlightTime").innerText=`${Math.floor(durationH)}h ${String(Math.round((durationH%1)*60)).padStart(2,"0")}m`;
   document.getElementById("modalRemainingTime").innerText=`${Math.floor(remainH)}h ${String(Math.round((remainH%1)*60)).padStart(2,"0")}m`;
   document.getElementById("modalDistanceKm").innerText=totalKm.toLocaleString()+" km";
   document.getElementById("modalDistanceMiles").innerText=miles.toLocaleString()+" mi";
-  document.getElementById("modalNote").innerText="Departure and arrival are shown in local airport time. +1 means arrival is the next local day.";
+  document.getElementById("modalTimeDiff").innerText=diffText;
+  document.getElementById("modalLocalNote").innerText="Departure + arrival";
+  document.getElementById("modalNote").innerText="Flight time is the real duration. Clock times may look shorter or longer because departure and arrival are shown in each airport's local time.";
 }
 function openFlightInfo(el){
   document.querySelectorAll(".navbtn").forEach(b=>b.classList.remove("active"));
