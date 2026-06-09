@@ -43,7 +43,7 @@ html,body{background:#000;color:var(--white);font-family:-apple-system,BlinkMacS
   <div class="card"><div class="mapWrap" id="mapWrap"><div class="fallbackMap"></div><div id="realMap"></div><div class="overlayGlow"></div><div class="mapControls"><button class="mapBtn" onclick="zoomIn()">＋</button><button class="mapBtn" onclick="zoomOut()">－</button></div><div class="threeD">🌐 &nbsp;3D</div><div class="target" onclick="fitRoute()">⌾</div></div></div>
   <div class="card progressCard"><div><div class="progressTitle">FLIGHT PROGRESS</div><div class="percent" id="percent">42%</div><div class="barWrap"><div class="bar"><div class="fill" id="fill"></div><div class="barPlane" id="barPlane">✈</div></div></div><div class="codeRow"><span id="fromCode">LHR</span><span id="toCode">IST</span></div></div><div><div class="distanceTitle">DISTANCE REMAINING</div><div class="distance" id="remaining">1,167 km</div></div></div>
   <div class="stats"><div class="stat"><span class="ico">🧭</span><small>GROUND SPEED</small><b id="speed">842 km/h</b></div><div class="stat"><span class="ico" style="color:#44e45d">⛰️</span><small>ALTITUDE</small><b id="altitude">36,000 ft</b></div><div class="stat"><span class="ico" style="color:#795cff">🟣</span><small>HEADING</small><b id="heading">089°</b></div><div class="stat"><span class="ico" style="color:#ffae1a">🕘</span><small>ETA</small><b id="eta">02h 18m</b></div></div>
-  <div class="details"><div class="panel"><h3>FLIGHT DETAILS</h3><div class="row"><span>Flight Number</span><b>SKR1907</b></div><div class="row"><span>Aircraft</span><b>Boeing 737-800</b></div><div class="row"><span>Departure Time</span><b>17:05</b></div><div class="row"><span>Estimated Arrival</span><b id="arrTime">20:23</b></div><div class="row"><span>Total Distance</span><b id="totalDistance">2,776 km</b></div><div class="row"><span>Airports Loaded</span><b>194</b></div><div class="circle">✈</div><div class="flightTime" id="flightTime">01h 12m</div><div style="text-align:center;color:#8fa3b8;font-size:12px" id="remainTime">Remaining 02h 18m</div></div>
+  <div class="details"><div class="panel"><h3>FLIGHT DETAILS</h3><div class="row"><span>Flight Number</span><b>SKR1907</b></div><div class="row"><span>Aircraft</span><b>Boeing 737-800</b></div><div class="row"><span>Departure Time</span><b id="depTime">5:05 PM</b></div><div class="row"><span>Estimated Arrival</span><b id="arrTime">20:23</b></div><div class="row"><span>Total Distance</span><b id="totalDistance">2,776 km</b></div><div class="row"><span>Airports Loaded</span><b>194</b></div><div class="circle">✈</div><div class="flightTime" id="flightTime">01h 12m</div><div style="text-align:center;color:#8fa3b8;font-size:12px" id="remainTime">Remaining 02h 18m</div></div>
   <div class="panel routeInfo"><h3>ROUTE INFO</h3><div class="stop"><div class="pin">●</div><div><b id="routeFrom">London (LHR)</b><small id="routeFromSub">Heathrow Airport</small><small style="color:#55f24c">17:05</small></div></div><div style="border-left:2px dashed #6b7f91;height:38px;margin-left:9px;padding-left:10px">✈</div><div class="stop"><div class="pin">●</div><div><b id="routeTo">Istanbul (IST)</b><small id="routeToSub">Istanbul Airport</small><small style="color:#55f24c" id="routeArr">20:23</small></div></div></div></div>
   <div class="card nav"><div class="navbtn active"><span>🌐</span>MAP</div><div class="navbtn"><span>ⓘ</span>FLIGHT INFO</div><div class="navbtn"><span>✈</span>AIRPORTS</div><div class="navbtn"><span>☁</span>WEATHER</div><div class="navbtn"><span>⚙</span>SETTINGS</div></div>
 </div>
@@ -56,12 +56,37 @@ function bearing(a,b){let y=Math.sin((b.lon-a.lon)*Math.PI/180)*Math.cos(b.lat*M
 function airportTimeZone(ap){const byCode={JFK:"America/New_York",EWR:"America/New_York",YYZ:"America/Toronto",DXB:"Asia/Dubai",AUH:"Asia/Dubai",DOH:"Asia/Qatar",PDL:"Atlantic/Azores",FNC:"Atlantic/Madeira",KEF:"Atlantic/Reykjavik",RKV:"Atlantic/Reykjavik",IST:"Europe/Istanbul",SAW:"Europe/Istanbul",AYT:"Europe/Istanbul",ADB:"Europe/Istanbul",ESB:"Europe/Istanbul",DLM:"Europe/Istanbul",BJV:"Europe/Istanbul",TZX:"Europe/Istanbul",ADA:"Europe/Istanbul",ASR:"Europe/Istanbul",GZT:"Europe/Istanbul",DIY:"Europe/Istanbul",ERZ:"Europe/Istanbul",VAN:"Europe/Istanbul"};const byCountry={"United Kingdom":"Europe/London",Ireland:"Europe/Dublin",France:"Europe/Paris",Netherlands:"Europe/Amsterdam",Belgium:"Europe/Brussels",Luxembourg:"Europe/Luxembourg",Germany:"Europe/Berlin",Austria:"Europe/Vienna",Switzerland:"Europe/Zurich",Spain:"Europe/Madrid",Portugal:"Europe/Lisbon",Italy:"Europe/Rome",Malta:"Europe/Malta",Greece:"Europe/Athens",Cyprus:"Asia/Nicosia",Denmark:"Europe/Copenhagen",Norway:"Europe/Oslo",Sweden:"Europe/Stockholm",Finland:"Europe/Helsinki",Iceland:"Atlantic/Reykjavik",Latvia:"Europe/Riga",Estonia:"Europe/Tallinn",Lithuania:"Europe/Vilnius",Poland:"Europe/Warsaw",Czechia:"Europe/Prague",Hungary:"Europe/Budapest",Romania:"Europe/Bucharest",Bulgaria:"Europe/Sofia",Serbia:"Europe/Belgrade",Croatia:"Europe/Zagreb",Slovenia:"Europe/Ljubljana",Montenegro:"Europe/Podgorica",Albania:"Europe/Tirane","North Macedonia":"Europe/Skopje",Bosnia:"Europe/Sarajevo",Kosovo:"Europe/Belgrade",USA:"America/New_York",Canada:"America/Toronto","United Arab Emirates":"Asia/Dubai",Qatar:"Asia/Qatar"};return byCode[ap.c]||byCountry[ap.country]||"UTC"}
 function partsInZone(date,tz){const f=new Intl.DateTimeFormat("en-GB",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"});const p=Object.fromEntries(f.formatToParts(date).map(x=>[x.type,x.value]));return {y:+p.year,m:+p.month,d:+p.day,h:+p.hour,min:+p.minute}}
 function localTimeToUtc(year,month,day,hour,minute,tz){let utc=new Date(Date.UTC(year,month-1,day,hour,minute));for(let i=0;i<3;i++){const p=partsInZone(utc,tz);const shown=Date.UTC(p.y,p.m-1,p.d,p.h,p.min);const wanted=Date.UTC(year,month-1,day,hour,minute);utc=new Date(utc.getTime()-(shown-wanted))}return utc}
-function formatInZone(date,tz){try{return new Intl.DateTimeFormat([], {hour:"2-digit",minute:"2-digit",hour12:false,timeZone:tz}).format(date)}catch(e){return date.getHours().toString().padStart(2,"0")+":"+date.getMinutes().toString().padStart(2,"0")}}
+function formatInZone12(date,tz){try{return new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"2-digit",hour12:true,timeZone:tz}).format(date)}catch(e){return date.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",hour12:true})}}
+function formatDateInZone(date,tz){try{return new Intl.DateTimeFormat("en-GB",{weekday:"short",day:"2-digit",month:"short",timeZone:tz}).format(date)}catch(e){return ""}}
 function dayDiffInZones(depUtc,arrUtc,fromTz,toTz){const d1=partsInZone(depUtc,fromTz),d2=partsInZone(arrUtc,toTz);const a=Date.UTC(d1.y,d1.m-1,d1.d),b=Date.UTC(d2.y,d2.m-1,d2.d);return Math.round((b-a)/86400000)}
-function estimatedCruiseSpeed(distanceKm){if(distanceKm<900)return 720;if(distanceKm<1800)return 780;if(distanceKm<3500)return 830;if(distanceKm<6500)return 870;return 900}
-function estimatedBlockHours(distanceKm){return distanceKm/estimatedCruiseSpeed(distanceKm)+0.35}
+function dayMarker(diff){return diff>0?" +"+diff:diff<0?" "+diff:""}
+function estimatedBlockHours(distanceKm,from,to){
+  let cruise=820;
+  if(distanceKm<900)cruise=690;
+  else if(distanceKm<1800)cruise=760;
+  else if(distanceKm<3500)cruise=805;
+  else if(distanceKm<6500)cruise=835;
+  else cruise=850;
+  let block=distanceKm/cruise+0.55;
+  if(distanceKm>6500){
+    if(to.lon<from.lon) block+=0.35;   // long-haul westbound winds/route allowance
+    else block+=0.15;                  // long-haul eastbound allowance
+  }
+  return block;
+}
 function scheduledDepartureUtc(from){const tz=airportTimeZone(from);const now=partsInZone(new Date(),tz);return localTimeToUtc(now.y,now.m,now.d,17,5,tz)}
-function scheduledArrivalText(from,to,totalHours){const depUtc=scheduledDepartureUtc(from);const arrUtc=new Date(depUtc.getTime()+totalHours*3600*1000);const diff=dayDiffInZones(depUtc,arrUtc,airportTimeZone(from),airportTimeZone(to));return formatInZone(arrUtc,airportTimeZone(to))+(diff>0?" +"+diff:diff<0?" "+diff:"")}
+function scheduledTimes(from,to,totalHours){
+  const fromTz=airportTimeZone(from), toTz=airportTimeZone(to);
+  const depUtc=scheduledDepartureUtc(from);
+  const arrUtc=new Date(depUtc.getTime()+totalHours*3600*1000);
+  const diff=dayDiffInZones(depUtc,arrUtc,fromTz,toTz);
+  return {
+    dep: formatInZone12(depUtc,fromTz)+" "+from.c,
+    arr: formatInZone12(arrUtc,toTz)+" "+to.c+dayMarker(diff),
+    depDate: formatDateInZone(depUtc,fromTz),
+    arrDate: formatDateInZone(arrUtc,toTz)+dayMarker(diff)
+  };
+}
 function fillSelects(){const f=document.getElementById("fromAirport"),t=document.getElementById("toAirport");airports.sort((a,b)=>a.country.localeCompare(b.country)||a.n.localeCompare(b.n)).forEach(ap=>{const label=`${ap.flag} ${ap.n} (${ap.c}) - ${ap.country}`;f.add(new Option(label,ap.c));t.add(new Option(label,ap.c))});f.value="LHR";t.value="IST";f.onchange=drawRoute;t.onchange=drawRoute}
 function initMap(){try{map=L.map('realMap',{zoomControl:false,attributionControl:false,worldCopyJump:true}).setView([47,12],3);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:10,minZoom:2,crossOrigin:true}).addTo(map);}catch(e){console.log(e)}}
 function iconHtml(html, cls){return L.divIcon({html:html,className:cls,iconSize:[30,30],iconAnchor:[15,15]})}
@@ -73,11 +98,16 @@ function drawRoute(){
  document.getElementById("fromSub").innerText=from.a;document.getElementById("toSub").innerText=to.a;document.getElementById("fromCode").innerText=from.c;document.getElementById("toCode").innerText=to.c;
  document.getElementById("routeFrom").innerText=`${from.n} (${from.c})`;document.getElementById("routeTo").innerText=`${to.n} (${to.c})`;document.getElementById("routeFromSub").innerText=from.a;document.getElementById("routeToSub").innerText=to.a;
  if(map){[routeLine,planeMarker,startMarker,endMarker,startLabel,endLabel].forEach(x=>{if(x)map.removeLayer(x)});const a=[from.lat,from.lon], b=[to.lat,to.lon];routeLine=L.polyline([a,b],{color:'#55f24c',weight:5,opacity:.95}).addTo(map);startMarker=L.marker(a,{icon:iconHtml('<div class="airportDot"></div>','')}).addTo(map);endMarker=L.marker(b,{icon:iconHtml('<div class="airportDot end"></div>','')}).addTo(map);startLabel=L.marker(a,{icon:labelHtml(from.n.split(' ')[0])}).addTo(map);endLabel=L.marker(b,{icon:labelHtml(to.n.split(' ')[0])}).addTo(map);const lat=from.lat+(to.lat-from.lat)*progress, lon=from.lon+(to.lon-from.lon)*progress;planeMarker=L.marker([lat,lon],{icon:iconHtml('<div class="planeIcon">✈</div>','')}).addTo(map);fitRoute();}
- const total=km(from,to),remaining=Math.round(total*(1-progress)),duration=estimatedBlockHours(total),remainH=duration*(1-progress),doneH=duration*progress;
+ const total=km(from,to),remaining=Math.round(total*(1-progress)),duration=estimatedBlockHours(total,from,to),remainH=duration*(1-progress),doneH=duration*progress;
  document.getElementById("totalDistance").innerText=total.toLocaleString()+" km";document.getElementById("remaining").innerText=remaining.toLocaleString()+" km";document.getElementById("percent").innerText=Math.round(progress*100)+"%";document.getElementById("fill").style.width=Math.round(progress*100)+"%";document.getElementById("barPlane").style.left=Math.round(progress*100)+"%";document.getElementById("heading").innerText=String(bearing(from,to)).padStart(3,"0")+"°";
  const rh=Math.floor(remainH),rm=Math.round((remainH%1)*60),dh=Math.floor(doneH),dm=Math.round((doneH%1)*60);
  document.getElementById("eta").innerText=`${rh}h ${String(rm).padStart(2,"0")}m`;document.getElementById("remainTime").innerText=`Remaining ${String(rh).padStart(2,"0")}h ${String(rm).padStart(2,"0")}m`;document.getElementById("flightTime").innerText=`${String(dh).padStart(2,"0")}h ${String(dm).padStart(2,"0")}m`;
- const arrText=scheduledArrivalText(from,to,duration);document.getElementById("arrTime").innerText=arrText;document.getElementById("routeArr").innerText=arrText;
+ const times=scheduledTimes(from,to,duration);
+ document.getElementById("depTime").innerText=times.dep;
+ document.getElementById("arrTime").innerText=times.arr;
+ document.getElementById("routeArr").innerText=times.arr;
+ document.getElementById("routeFromSub").innerText=from.a+" • "+times.depDate;
+ document.getElementById("routeToSub").innerText=to.a+" • "+times.arrDate;
 }
 function fitRoute(){if(routeLine&&map)map.fitBounds(routeLine.getBounds(),{padding:[45,45],maxZoom:5})}
 function zoomIn(){if(map)map.zoomIn()}function zoomOut(){if(map)map.zoomOut()}
