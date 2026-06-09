@@ -1,440 +1,2502 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=3">
-<link rel="icon" type="image/png" href="./apple-touch-icon.png?v=3">
-<link rel="manifest" href="./manifest.json?v=3">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>SkyRoute Europe</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>
-:root{--bg:#020914;--card:#06111d;--line:#173757;--blue:#1d9bff;--green:#55f24c;--muted:#8ea5ba;--white:#eef7ff;--orange:#ffae1a}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#000;color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
-.phone{max-width:430px;min-height:100vh;margin:auto;background:radial-gradient(circle at 50% 0,#132943 0,#020914 55%,#000 100%);padding:12px;overflow:hidden}
-.top{display:flex;align-items:center;justify-content:space-between;height:44px}
-.brand{display:flex;align-items:center;gap:7px;font-size:24px;font-weight:900}.sky{color:#fff}.route{color:#ffb11a}
-.topRight{display:flex;gap:12px;align-items:center;color:#b9cbe0}.gps{font-size:11px;color:#9fb5c9}.gps b{color:var(--green)}.icon{font-size:21px}
-.card{background:linear-gradient(180deg,rgba(9,24,40,.97),rgba(3,10,18,.99));border:1px solid var(--line);border-radius:18px;box-shadow:0 15px 35px rgba(0,0,0,.45),inset 0 0 25px rgba(40,130,220,.05);margin-top:9px;overflow:hidden}
-.routeCard{padding:11px}.routeTop{display:grid;grid-template-columns:1fr 45px 1fr 46px;gap:9px;align-items:center}
-.airportBlock{position:relative;display:flex;align-items:center;gap:8px;min-height:56px}.flag{font-size:31px;line-height:1;filter:drop-shadow(0 2px 3px #000)}
-.airText{min-width:0}.airText small{display:block;color:#8ea5ba;font-size:9px;font-weight:800;letter-spacing:.8px;margin-bottom:3px}.airName{font-size:15px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.airSub{color:#8ea5ba;font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hiddenSelect{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}.swap{width:45px;height:52px;border:1px solid #203d5d;background:linear-gradient(#102034,#07111d);color:#d8ebff;border-radius:14px;font-size:24px;font-weight:900}.routeBtn{border:1px solid var(--blue);color:var(--blue);background:rgba(0,80,160,.12);border-radius:12px;padding:11px 8px;font-size:10px;font-weight:900;white-space:nowrap}
-.mapWrap{height:310px;margin:0 8px 8px;border:1px solid #173b5e;border-radius:15px;position:relative;overflow:hidden;background:#06131f}
-#realMap{position:absolute;inset:0;z-index:1;background:#06131f}.leaflet-container{background:#06131f;filter:brightness(.72) contrast(1.18) saturate(1.15)}.leaflet-control-attribution{display:none!important}
-.fallbackMap{position:absolute;inset:0;z-index:0;background:radial-gradient(circle at 45% 45%,#163a5b,#03101b 68%)}.fallbackMap:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 17% 42%,rgba(120,150,160,.35),transparent 25%),radial-gradient(ellipse at 43% 31%,rgba(125,150,157,.42),transparent 24%),radial-gradient(ellipse at 55% 61%,rgba(132,123,86,.34),transparent 27%),radial-gradient(ellipse at 78% 47%,rgba(115,140,150,.32),transparent 27%)}.overlayGlow{position:absolute;inset:0;background:radial-gradient(circle at 47% 42%,rgba(68,170,255,.12),transparent 32%),linear-gradient(rgba(2,8,15,.02),rgba(2,8,15,.25));z-index:3;pointer-events:none}
-.mapControls{position:absolute;right:9px;top:92px;z-index:20;display:flex;flex-direction:column}.mapBtn{width:42px;height:42px;background:rgba(8,17,27,.88);border:1px solid #27425d;color:#b9cbe0;font-size:25px}.mapBtn:first-child{border-radius:12px 12px 0 0}.mapBtn:last-child{border-radius:0 0 12px 12px}.threeD{position:absolute;left:10px;bottom:10px;z-index:20;border:1px solid #27425d;background:rgba(8,17,27,.88);border-radius:10px;padding:9px 12px;color:#b9cbe0;font-size:12px;font-weight:700}.target{position:absolute;right:10px;bottom:10px;z-index:20;width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:1px solid #27425d;background:rgba(8,17,27,.88);border-radius:12px;color:#b9cbe0;font-size:21px}
-.planeIcon{font-size:34px;filter:drop-shadow(0 0 7px #fff)}.airportLabel{background:rgba(0,0,0,.70);border:1px solid rgba(255,255,255,.2);border-radius:7px;color:#fff;padding:4px 7px;font-size:11px;font-weight:700}.airportDot{width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px #55f24c;background:#55f24c}.airportDot.end{background:#147dff;box-shadow:0 0 10px #1d9bff}
-.progressCard{padding:13px 14px;display:grid;grid-template-columns:1fr 118px;gap:12px;align-items:center}.progressTitle,.distanceTitle{color:#9fb1c5;font-size:11px;font-weight:800;letter-spacing:.6px}.percent{color:var(--green);font-size:34px;font-weight:900;margin-top:4px}.distance{font-size:25px;font-weight:400;margin-top:5px}.barWrap{display:flex;align-items:center;gap:6px}.bar{height:10px;flex:1;background:#1a2b3b;border-radius:30px;position:relative}.fill{position:absolute;left:0;top:0;bottom:0;width:42%;background:linear-gradient(90deg,var(--green),#5de04e);border-radius:30px}.barPlane{position:absolute;top:50%;left:42%;transform:translate(-50%,-50%);font-size:25px}.codeRow{display:flex;justify-content:space-between;color:#9fb1c5;font-size:12px;margin-top:6px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:9px}.stat{background:linear-gradient(180deg,#081524,#030912);border:1px solid #173452;border-radius:12px;padding:10px 8px;min-height:76px}.stat .ico{font-size:25px;color:var(--blue);display:block}.stat small{display:block;color:#9fb1c5;font-size:9px;margin:3px 0}.stat b{font-size:15px}
-.details{display:grid;grid-template-columns:1.35fr 1fr;gap:10px;margin-top:9px}.panel{background:linear-gradient(180deg,#081524,#030912);border:1px solid #173452;border-radius:14px;padding:13px;min-height:150px}.panel h3{font-size:15px;color:var(--blue);margin-bottom:12px}.row{display:flex;justify-content:space-between;margin:8px 0;font-size:12px;color:#abbdd1}.row b{color:var(--blue);font-weight:700;text-align:right}.circle{width:105px;height:105px;border-radius:50%;border:8px solid #0e2336;border-right-color:var(--blue);margin:5px auto;display:flex;align-items:center;justify-content:center;font-size:45px}.flightTime{text-align:center;font-size:20px;font-weight:300}.routeInfo .stop{display:grid;grid-template-columns:22px 1fr;gap:8px;margin:11px 0}.pin{color:var(--green);font-size:20px}.stop b{font-size:13px}.stop small{display:block;color:#8fa3b8}
-.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:10px}.navbtn{background:#07111d;border:1px solid #172f4e;border-radius:12px;height:68px;color:#8fa3b8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:10px}.navbtn.active{border-color:var(--blue);color:var(--blue);background:#07172a}.navbtn span{font-size:23px}
-@media(max-width:390px){.routeTop{grid-template-columns:1fr 42px 1fr}.routeBtn{grid-column:1/4}.stats{grid-template-columns:repeat(2,1fr)}.details{grid-template-columns:1fr}.mapWrap{height:275px}.airName{font-size:13px}.flag{font-size:26px}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Cup 2026 Fixtures</title>
 
-.flightModal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.72);
-  z-index:9999;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  backdrop-filter:blur(8px);
-}
-.flightModal.show{display:flex}
-.flightModalCard{
-  width:100%;
-  max-width:390px;
-  background:linear-gradient(180deg,#0b1d31,#020812);
-  border:1px solid #1d9bff;
-  border-radius:24px;
-  box-shadow:0 25px 60px rgba(0,0,0,.7),0 0 25px rgba(29,155,255,.25);
-  overflow:hidden;
-}
-.flightModalHeader{
-  padding:18px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid #173757;
-}
-.flightModalHeader h2{
-  color:#1d9bff;
-  font-size:24px;
-  letter-spacing:.5px;
-}
-.closeModal{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  border:1px solid #2a4a6b;
-  background:#081524;
-  color:white;
-  font-size:24px;
-}
-.flightModalBody{padding:16px}
-.infoBigRoute{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:16px;
-}
-.infoAirport{
-  flex:1;
-  background:#06111d;
-  border:1px solid #173757;
-  border-radius:16px;
-  padding:12px;
-}
-.infoAirport .flagBig{font-size:30px;margin-bottom:8px}
-.infoAirport b{display:block;font-size:18px}
-.infoAirport small{color:#8ea5ba}
-.infoArrow{font-size:28px;color:#55f24c}
-.infoGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.infoTile{
-  background:#06111d;
-  border:1px solid #173757;
-  border-radius:16px;
-  padding:13px;
-}
-.infoTile small{
-  display:block;
-  color:#8ea5ba;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.6px;
-  margin-bottom:6px;
-}
-.infoTile b{
-  display:block;
-  color:#eef7ff;
-  font-size:20px;
-  line-height:1.2;
-}
-.infoTile .green{color:#55f24c}
-.infoTile.full{grid-column:1/3}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
+        :root {
+            --bg: #07111f;
+            --card: #101c30;
+            --card2: #182842;
+            --line: #304566;
+            --text: #ffffff;
+            --muted: #c7d6ee;
+            --blue: #0b5cff;
+            --green: #00c853;
+            --gold: #ffd36b;
+            --red: #ef4444;
+        }
 
-.departControl{
-  margin-top:12px;
-  background:#06111d;
-  border:1px solid #173757;
-  border-radius:16px;
-  padding:12px;
-}
-.departControl small{
-  display:block;
-  color:#8ea5ba;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.6px;
-  margin-bottom:8px;
-}
-.departRow{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-.departRow input{
-  width:100%;
-  background:#020812;
-  color:#eef7ff;
-  border:1px solid #244768;
-  border-radius:11px;
-  padding:10px;
-  font-size:14px;
-}
-.departActions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:8px;
-}
-.departActions button{
-  border:1px solid #1d9bff;
-  color:#1d9bff;
-  background:rgba(0,80,160,.12);
-  border-radius:11px;
-  padding:10px;
-  font-weight:800;
-}
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: radial-gradient(circle at top, #10264a 0, #07111f 52%, #03070d 100%);
+            color: var(--text);
+        }
 
-</style>
+        header {
+            padding: 26px 16px;
+            text-align: center;
+            background: linear-gradient(135deg, #0642a4, #02b5ff);
+            box-shadow: 0 8px 25px #0006;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 27px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            color: #eaf3ff;
+        }
+
+        .wrap {
+            padding: 14px;
+            max-width: 980px;
+            margin: auto;
+        }
+
+        .card {
+            background: rgba(16, 28, 48, .94);
+            border: 1px solid #263a5c;
+            border-radius: 18px;
+            padding: 16px;
+            margin: 14px 0;
+            box-shadow: 0 8px 25px #0004;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+            color: #f2f7ff;
+        }
+
+        select,
+        button,
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 0;
+            font-size: 16px;
+            margin-top: 8px;
+        }
+
+        select,
+        input {
+            background: #f6f7fb;
+            color: #111;
+        }
+
+        button {
+            background: var(--green);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button.secondary {
+            background: #243856;
+        }
+
+        button.danger {
+            background: var(--red);
+        }
+
+        button.smallbtn {
+            width: auto;
+            padding: 9px 12px;
+            font-size: 13px;
+            margin: 4px 3px;
+            border-radius: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            margin-top: 12px;
+        }
+
+        .tab {
+            white-space: nowrap;
+            background: #243856;
+        }
+
+        .tab.active {
+            background: var(--blue);
+        }
+
+        h2 {
+            font-size: 30px;
+            margin: 8px 0 12px;
+        }
+
+        h3 {
+            margin: 6px 0 12px;
+        }
+
+        .match {
+            background: var(--card2);
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            padding: 14px;
+            margin: 12px 0;
+        }
+
+        .teams {
+            font-size: 21px;
+            font-weight: bold;
+            line-height: 1.3;
+        }
+
+        .meta {
+            color: var(--muted);
+            margin-top: 8px;
+            line-height: 1.65;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--blue);
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .flag {
+            font-size: 25px;
+            margin-right: 8px;
+        }
+
+        .countdown {
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .groupGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+            gap: 12px;
+        }
+
+        .groupBox {
+            background: #0b1628;
+            border: 1px solid #263a5c;
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .teamPill {
+            background: #172640;
+            border-radius: 10px;
+            margin: 6px 0;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .teamCode {
+            margin-left: auto;
+            color: #9fb0cc;
+        }
+
+        .scoreBox {
+            margin-top: 12px;
+            background: #0b1628;
+            border: 1px solid #263a5c;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .scoreGrid {
+            display: grid;
+            grid-template-columns: 1fr 80px 80px 1fr;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .scoreGrid input {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        .scoreSaved {
+            color: var(--gold);
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .tableWrap {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 620px;
+        }
+
+        th,
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #263a5c;
+            text-align: center;
+        }
+
+        th {
+            color: #9fb0cc;
+            font-size: 13px;
+        }
+
+        td.teamCell {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        tr.qualify {
+            background: rgba(0, 200, 83, .12);
+        }
+
+        .footer {
+            text-align: center;
+            color: #9fb0cc;
+            font-size: 12px;
+            padding: 18px;
+        }
+
+        @media (max-width: 650px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .scoreGrid {
+                grid-template-columns: 1fr 55px 55px 1fr;
+                gap: 6px;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 27px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-<div class="phone">
-  <div class="top"><div class="brand"><span>✈</span><span class="sky">Sky</span><span class="route">Route</span></div><div class="topRight"><span class="gps">GPS: <b id="gpsText">EST</b> ●</span><span class="icon">⌁</span><span class="icon">☰</span></div></div>
-  <div class="card routeCard"><div class="routeTop">
-    <div class="airportBlock"><div class="flag" id="fromFlag">🇬🇧</div><div class="airText"><small>FROM</small><div class="airName" id="fromName">London (LHR)</div><div class="airSub" id="fromSub">Heathrow Airport</div></div><select class="hiddenSelect" id="fromAirport"></select></div>
-    <button class="swap" onclick="swapAirports()">⇄</button>
-    <div class="airportBlock"><div class="airText"><small>TO</small><div class="airName" id="toName">Istanbul (IST)</div><div class="airSub" id="toSub">Istanbul Airport</div></div><div class="flag" id="toFlag">🇹🇷</div><select class="hiddenSelect" id="toAirport"></select></div>
-    <button class="routeBtn" onclick="drawRoute()">📍 CHANGE ROUTE</button>
-  </div></div>
-  <div class="card" id="mapSection"><div class="mapWrap" id="mapWrap"><div class="fallbackMap"></div><div id="realMap"></div><div class="overlayGlow"></div><div class="mapControls"><button class="mapBtn" onclick="zoomIn()">＋</button><button class="mapBtn" onclick="zoomOut()">－</button></div><div class="threeD">🌐 &nbsp;3D</div><div class="target" onclick="fitRoute()">⌾</div></div></div>
-  <div class="card progressCard"><div><div class="progressTitle">FLIGHT PROGRESS</div><div class="percent" id="percent">42%</div><div class="barWrap"><div class="bar"><div class="fill" id="fill"></div><div class="barPlane" id="barPlane">✈</div></div></div><div class="codeRow"><span id="fromCode">LHR</span><span id="toCode">IST</span></div></div><div><div class="distanceTitle">DISTANCE REMAINING</div><div class="distance" id="remaining">1,167 km</div></div></div>
-  <div class="stats"><div class="stat"><span class="ico">🧭</span><small>GROUND SPEED</small><b id="speed">842 km/h</b></div><div class="stat"><span class="ico" style="color:#44e45d">⛰️</span><small>ALTITUDE</small><b id="altitude">36,000 ft</b></div><div class="stat"><span class="ico" style="color:#795cff">🟣</span><small>HEADING</small><b id="heading">089°</b></div><div class="stat"><span class="ico" style="color:#ffae1a">🕘</span><small>ETA</small><b id="eta">02h 18m</b></div></div>
-  <div class="details" id="flightInfoSection"><div class="panel"><h3>FLIGHT DETAILS</h3><div class="row"><span>Flight Number</span><b>SKR1907</b></div><div class="row"><span>Aircraft</span><b>Boeing 737-800</b></div><div class="row"><span>Departure Time</span><b id="depTime">5:05 PM</b></div><div class="row"><span>Estimated Arrival</span><b id="arrTime">20:23</b></div><div class="row"><span>Total Distance</span><b id="totalDistance">2,776 km</b></div><div class="row"><span>Airports Loaded</span><b>194</b></div><div class="circle">✈</div><div class="flightTime" id="flightTime">01h 12m</div><div style="text-align:center;color:#8fa3b8;font-size:12px" id="remainTime">Remaining 02h 18m</div></div>
-  <div class="panel routeInfo" id="routeInfoSection"><h3>ROUTE INFO</h3><div class="stop"><div class="pin">●</div><div><b id="routeFrom">London (LHR)</b><small id="routeFromSub">Heathrow Airport</small><small style="color:#55f24c" id="routeDep">17:05</small></div></div><div style="border-left:2px dashed #6b7f91;height:38px;margin-left:9px;padding-left:10px">✈</div><div class="stop"><div class="pin">●</div><div><b id="routeTo">Istanbul (IST)</b><small id="routeToSub">Istanbul Airport</small><small style="color:#55f24c" id="routeArr">20:23</small></div></div></div></div>
-  <div id="weatherSection"></div><div id="settingsSection"></div><div class="card nav">
-    <div class="navbtn active" onclick="goTab('mapSection',this)"><span>🌐</span>MAP</div>
-    <div class="navbtn" onclick="openFlightInfo(this)"><span>ⓘ</span>FLIGHT INFO</div>
-    <div class="navbtn" onclick="goTab('routeInfoSection',this)"><span>✈</span>AIRPORTS</div>
-    <div class="navbtn" onclick="goTab('weatherSection',this)"><span>☁</span>WEATHER</div>
-    <div class="navbtn" onclick="goTab('settingsSection',this)"><span>⚙</span>SETTINGS</div>
-  </div>
+    <header>
+        <h1>🏆 World Cup 2026 Fixtures</h1>
+        <p>Fixtures, scores, group tables, countdown and your local time</p>
+    </header>
 
-<div class="flightModal" id="flightModal">
-  <div class="flightModalCard">
-    <div class="flightModalHeader">
-      <h2>FLIGHT INFO</h2>
-      <button class="closeModal" onclick="closeFlightInfo()">×</button>
+    <div class="wrap">
+        <div class="card">
+            <div class="row">
+                <div>
+                    <label>Select country</label>
+                    <select id="countrySelect"></select>
+                </div>
+
+                <div>
+                    <label>Your time zone</label>
+                    <select id="timezoneSelect"></select>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top:10px">
+                <button onclick="showCountry()">Show My Country Fixtures</button>
+                <button class="secondary" onclick="showAll()">Show All 104 Fixtures</button>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="setStage('all', this)">All</button>
+                <button class="tab" onclick="setStage('group', this)">Group Stage</button>
+                <button class="tab" onclick="setStage('knockout', this)">Knockout</button>
+                <button class="tab" onclick="showGroups(this)">Groups A-L</button>
+                <button class="tab" onclick="showTables(this)">Tables</button>
+            </div>
+        </div>
+
+        <div id="results"></div>
+
+        <div class="footer">
+            Scores are saved on this device using local storage.
+        </div>
     </div>
-    <div class="flightModalBody">
-      <div class="infoBigRoute">
-        <div class="infoAirport">
-          <div class="flagBig" id="modalFromFlag">🇹🇷</div>
-          <b id="modalFrom">Istanbul (IST)</b>
-          <small id="modalFromAirport">Istanbul Airport</small>
-        </div>
-        <div class="infoArrow">✈</div>
-        <div class="infoAirport">
-          <div class="flagBig" id="modalToFlag">🇺🇸</div>
-          <b id="modalTo">New York JFK (JFK)</b>
-          <small id="modalToAirport">New York JFK Airport</small>
-        </div>
-      </div>
 
-      <div class="departControl">
-        <small>SET ACTUAL DEPARTURE TIME</small>
-        <div class="departRow">
-          <input type="date" id="depDateInput">
-          <input type="time" id="depTimeInput">
-        </div>
-        <div class="departActions">
-          <button onclick="saveDepartureTime()">SAVE TIME</button>
-          <button onclick="useNowDeparture()">USE NOW</button>
-        </div>
-      </div>
+    <script>
+        const groups = {
+            "A": [
+                        [
+                                    "Mexico",
+                                    "MEX",
+                                    "🇲🇽"
+                        ],
+                        [
+                                    "South Africa",
+                                    "RSA",
+                                    "🇿🇦"
+                        ],
+                        [
+                                    "South Korea",
+                                    "KOR",
+                                    "🇰🇷"
+                        ],
+                        [
+                                    "Czechia",
+                                    "CZE",
+                                    "🇨🇿"
+                        ]
+            ],
+            "B": [
+                        [
+                                    "Canada",
+                                    "CAN",
+                                    "🇨🇦"
+                        ],
+                        [
+                                    "Qatar",
+                                    "QAT",
+                                    "🇶🇦"
+                        ],
+                        [
+                                    "Switzerland",
+                                    "SUI",
+                                    "🇨🇭"
+                        ],
+                        [
+                                    "Bosnia and Herzegovina",
+                                    "BIH",
+                                    "🇧🇦"
+                        ]
+            ],
+            "C": [
+                        [
+                                    "Brazil",
+                                    "BRA",
+                                    "🇧🇷"
+                        ],
+                        [
+                                    "Morocco",
+                                    "MAR",
+                                    "🇲🇦"
+                        ],
+                        [
+                                    "Haiti",
+                                    "HAI",
+                                    "🇭🇹"
+                        ],
+                        [
+                                    "Scotland",
+                                    "SCO",
+                                    "🏴"
+                        ]
+            ],
+            "D": [
+                        [
+                                    "United States",
+                                    "USA",
+                                    "🇺🇸"
+                        ],
+                        [
+                                    "Paraguay",
+                                    "PAR",
+                                    "🇵🇾"
+                        ],
+                        [
+                                    "Australia",
+                                    "AUS",
+                                    "🇦🇺"
+                        ],
+                        [
+                                    "Türkiye",
+                                    "TUR",
+                                    "🇹🇷"
+                        ]
+            ],
+            "E": [
+                        [
+                                    "Germany",
+                                    "GER",
+                                    "🇩🇪"
+                        ],
+                        [
+                                    "Curaçao",
+                                    "CUW",
+                                    "🇨🇼"
+                        ],
+                        [
+                                    "Côte d’Ivoire",
+                                    "CIV",
+                                    "🇨🇮"
+                        ],
+                        [
+                                    "Ecuador",
+                                    "ECU",
+                                    "🇪🇨"
+                        ]
+            ],
+            "F": [
+                        [
+                                    "Netherlands",
+                                    "NED",
+                                    "🇳🇱"
+                        ],
+                        [
+                                    "Japan",
+                                    "JPN",
+                                    "🇯🇵"
+                        ],
+                        [
+                                    "Tunisia",
+                                    "TUN",
+                                    "🇹🇳"
+                        ],
+                        [
+                                    "Sweden",
+                                    "SWE",
+                                    "🇸🇪"
+                        ]
+            ],
+            "G": [
+                        [
+                                    "Belgium",
+                                    "BEL",
+                                    "🇧🇪"
+                        ],
+                        [
+                                    "Egypt",
+                                    "EGY",
+                                    "🇪🇬"
+                        ],
+                        [
+                                    "Iran",
+                                    "IRN",
+                                    "🇮🇷"
+                        ],
+                        [
+                                    "New Zealand",
+                                    "NZL",
+                                    "🇳🇿"
+                        ]
+            ],
+            "H": [
+                        [
+                                    "Spain",
+                                    "ESP",
+                                    "🇪🇸"
+                        ],
+                        [
+                                    "Cabo Verde",
+                                    "CPV",
+                                    "🇨🇻"
+                        ],
+                        [
+                                    "Saudi Arabia",
+                                    "KSA",
+                                    "🇸🇦"
+                        ],
+                        [
+                                    "Uruguay",
+                                    "URU",
+                                    "🇺🇾"
+                        ]
+            ],
+            "I": [
+                        [
+                                    "France",
+                                    "FRA",
+                                    "🇫🇷"
+                        ],
+                        [
+                                    "Senegal",
+                                    "SEN",
+                                    "🇸🇳"
+                        ],
+                        [
+                                    "Norway",
+                                    "NOR",
+                                    "🇳🇴"
+                        ],
+                        [
+                                    "Iraq",
+                                    "IRQ",
+                                    "🇮🇶"
+                        ]
+            ],
+            "J": [
+                        [
+                                    "Argentina",
+                                    "ARG",
+                                    "🇦🇷"
+                        ],
+                        [
+                                    "Algeria",
+                                    "ALG",
+                                    "🇩🇿"
+                        ],
+                        [
+                                    "Austria",
+                                    "AUT",
+                                    "🇦🇹"
+                        ],
+                        [
+                                    "Jordan",
+                                    "JOR",
+                                    "🇯🇴"
+                        ]
+            ],
+            "K": [
+                        [
+                                    "Portugal",
+                                    "POR",
+                                    "🇵🇹"
+                        ],
+                        [
+                                    "Uzbekistan",
+                                    "UZB",
+                                    "🇺🇿"
+                        ],
+                        [
+                                    "Colombia",
+                                    "COL",
+                                    "🇨🇴"
+                        ],
+                        [
+                                    "Congo DR",
+                                    "COD",
+                                    "🇨🇩"
+                        ]
+            ],
+            "L": [
+                        [
+                                    "England",
+                                    "ENG",
+                                    "🏴"
+                        ],
+                        [
+                                    "Croatia",
+                                    "CRO",
+                                    "🇭🇷"
+                        ],
+                        [
+                                    "Ghana",
+                                    "GHA",
+                                    "🇬🇭"
+                        ],
+                        [
+                                    "Panama",
+                                    "PAN",
+                                    "🇵🇦"
+                        ]
+            ]
+};
 
-      <div class="infoGrid">
-        <div class="infoTile">
-          <small>DEPARTURE</small>
-          <b class="green" id="modalDeparture">5:05 PM IST</b>
-          <small id="modalDepartureDate">Tue 09 Jun</small>
-        </div>
-        <div class="infoTile">
-          <small>ARRIVAL</small>
-          <b class="green" id="modalArrival">8:48 PM JFK</b>
-          <small id="modalArrivalDate">Tue 09 Jun</small>
-        </div>
-        <div class="infoTile">
-          <small>FLIGHT TIME</small>
-          <b id="modalFlightTime">10h 44m</b>
-        </div>
-        <div class="infoTile">
-          <small>REMAINING</small>
-          <b id="modalRemainingTime">6h 07m</b>
-        </div>
-        <div class="infoTile">
-          <small>DISTANCE KM</small>
-          <b id="modalDistanceKm">8,027 km</b>
-        </div>
-        <div class="infoTile">
-          <small>DISTANCE MILES</small>
-          <b id="modalDistanceMiles">4,988 mi</b>
-        </div>
-        <div class="infoTile">
-          <small>TIME DIFFERENCE</small>
-          <b id="modalTimeDiff">JFK is 7h behind</b>
-        </div>
-        <div class="infoTile">
-          <small>TIME SHOWN AS</small>
-          <b id="modalLocalNote">Local airport time</b>
-        </div>
-        <div class="infoTile full">
-          <small>LOCAL TIME NOTE</small>
-          <b id="modalNote">Arrival can look only a few clock-hours later because the flight crosses time zones.</b>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+        const teamInfo = {
+            "Mexico": {
+                        "code": "MEX",
+                        "flag": "🇲🇽",
+                        "group": "A"
+            },
+            "South Africa": {
+                        "code": "RSA",
+                        "flag": "🇿🇦",
+                        "group": "A"
+            },
+            "South Korea": {
+                        "code": "KOR",
+                        "flag": "🇰🇷",
+                        "group": "A"
+            },
+            "Czechia": {
+                        "code": "CZE",
+                        "flag": "🇨🇿",
+                        "group": "A"
+            },
+            "Canada": {
+                        "code": "CAN",
+                        "flag": "🇨🇦",
+                        "group": "B"
+            },
+            "Qatar": {
+                        "code": "QAT",
+                        "flag": "🇶🇦",
+                        "group": "B"
+            },
+            "Switzerland": {
+                        "code": "SUI",
+                        "flag": "🇨🇭",
+                        "group": "B"
+            },
+            "Bosnia and Herzegovina": {
+                        "code": "BIH",
+                        "flag": "🇧🇦",
+                        "group": "B"
+            },
+            "Brazil": {
+                        "code": "BRA",
+                        "flag": "🇧🇷",
+                        "group": "C"
+            },
+            "Morocco": {
+                        "code": "MAR",
+                        "flag": "🇲🇦",
+                        "group": "C"
+            },
+            "Haiti": {
+                        "code": "HAI",
+                        "flag": "🇭🇹",
+                        "group": "C"
+            },
+            "Scotland": {
+                        "code": "SCO",
+                        "flag": "🏴",
+                        "group": "C"
+            },
+            "United States": {
+                        "code": "USA",
+                        "flag": "🇺🇸",
+                        "group": "D"
+            },
+            "Paraguay": {
+                        "code": "PAR",
+                        "flag": "🇵🇾",
+                        "group": "D"
+            },
+            "Australia": {
+                        "code": "AUS",
+                        "flag": "🇦🇺",
+                        "group": "D"
+            },
+            "Türkiye": {
+                        "code": "TUR",
+                        "flag": "🇹🇷",
+                        "group": "D"
+            },
+            "Germany": {
+                        "code": "GER",
+                        "flag": "🇩🇪",
+                        "group": "E"
+            },
+            "Curaçao": {
+                        "code": "CUW",
+                        "flag": "🇨🇼",
+                        "group": "E"
+            },
+            "Côte d’Ivoire": {
+                        "code": "CIV",
+                        "flag": "🇨🇮",
+                        "group": "E"
+            },
+            "Ecuador": {
+                        "code": "ECU",
+                        "flag": "🇪🇨",
+                        "group": "E"
+            },
+            "Netherlands": {
+                        "code": "NED",
+                        "flag": "🇳🇱",
+                        "group": "F"
+            },
+            "Japan": {
+                        "code": "JPN",
+                        "flag": "🇯🇵",
+                        "group": "F"
+            },
+            "Tunisia": {
+                        "code": "TUN",
+                        "flag": "🇹🇳",
+                        "group": "F"
+            },
+            "Sweden": {
+                        "code": "SWE",
+                        "flag": "🇸🇪",
+                        "group": "F"
+            },
+            "Belgium": {
+                        "code": "BEL",
+                        "flag": "🇧🇪",
+                        "group": "G"
+            },
+            "Egypt": {
+                        "code": "EGY",
+                        "flag": "🇪🇬",
+                        "group": "G"
+            },
+            "Iran": {
+                        "code": "IRN",
+                        "flag": "🇮🇷",
+                        "group": "G"
+            },
+            "New Zealand": {
+                        "code": "NZL",
+                        "flag": "🇳🇿",
+                        "group": "G"
+            },
+            "Spain": {
+                        "code": "ESP",
+                        "flag": "🇪🇸",
+                        "group": "H"
+            },
+            "Cabo Verde": {
+                        "code": "CPV",
+                        "flag": "🇨🇻",
+                        "group": "H"
+            },
+            "Saudi Arabia": {
+                        "code": "KSA",
+                        "flag": "🇸🇦",
+                        "group": "H"
+            },
+            "Uruguay": {
+                        "code": "URU",
+                        "flag": "🇺🇾",
+                        "group": "H"
+            },
+            "France": {
+                        "code": "FRA",
+                        "flag": "🇫🇷",
+                        "group": "I"
+            },
+            "Senegal": {
+                        "code": "SEN",
+                        "flag": "🇸🇳",
+                        "group": "I"
+            },
+            "Norway": {
+                        "code": "NOR",
+                        "flag": "🇳🇴",
+                        "group": "I"
+            },
+            "Iraq": {
+                        "code": "IRQ",
+                        "flag": "🇮🇶",
+                        "group": "I"
+            },
+            "Argentina": {
+                        "code": "ARG",
+                        "flag": "🇦🇷",
+                        "group": "J"
+            },
+            "Algeria": {
+                        "code": "ALG",
+                        "flag": "🇩🇿",
+                        "group": "J"
+            },
+            "Austria": {
+                        "code": "AUT",
+                        "flag": "🇦🇹",
+                        "group": "J"
+            },
+            "Jordan": {
+                        "code": "JOR",
+                        "flag": "🇯🇴",
+                        "group": "J"
+            },
+            "Portugal": {
+                        "code": "POR",
+                        "flag": "🇵🇹",
+                        "group": "K"
+            },
+            "Uzbekistan": {
+                        "code": "UZB",
+                        "flag": "🇺🇿",
+                        "group": "K"
+            },
+            "Colombia": {
+                        "code": "COL",
+                        "flag": "🇨🇴",
+                        "group": "K"
+            },
+            "Congo DR": {
+                        "code": "COD",
+                        "flag": "🇨🇩",
+                        "group": "K"
+            },
+            "England": {
+                        "code": "ENG",
+                        "flag": "🏴",
+                        "group": "L"
+            },
+            "Croatia": {
+                        "code": "CRO",
+                        "flag": "🇭🇷",
+                        "group": "L"
+            },
+            "Ghana": {
+                        "code": "GHA",
+                        "flag": "🇬🇭",
+                        "group": "L"
+            },
+            "Panama": {
+                        "code": "PAN",
+                        "flag": "🇵🇦",
+                        "group": "L"
+            }
+};
 
-</div>
-<script>
-const airports = [{"c": "LHR", "n": "London Heathrow", "a": "London Heathrow", "country": "United Kingdom", "lat": 51.47, "lon": -0.4543, "flag": "🇬🇧"}, {"c": "LGW", "n": "London Gatwick", "a": "London Gatwick", "country": "United Kingdom", "lat": 51.1537, "lon": -0.1821, "flag": "🇬🇧"}, {"c": "STN", "n": "London Stansted", "a": "London Stansted", "country": "United Kingdom", "lat": 51.886, "lon": 0.2389, "flag": "🇬🇧"}, {"c": "LTN", "n": "London Luton", "a": "London Luton", "country": "United Kingdom", "lat": 51.8747, "lon": -0.3683, "flag": "🇬🇧"}, {"c": "LCY", "n": "London City", "a": "London City", "country": "United Kingdom", "lat": 51.5053, "lon": 0.0553, "flag": "🇬🇧"}, {"c": "SEN", "n": "London Southend", "a": "London Southend Airport", "country": "United Kingdom", "lat": 51.5714, "lon": 0.6956, "flag": "🇬🇧"}, {"c": "MAN", "n": "Manchester", "a": "Manchester Airport", "country": "United Kingdom", "lat": 53.365, "lon": -2.2722, "flag": "🇬🇧"}, {"c": "BHX", "n": "Birmingham", "a": "Birmingham Airport", "country": "United Kingdom", "lat": 52.4539, "lon": -1.748, "flag": "🇬🇧"}, {"c": "BRS", "n": "Bristol", "a": "Bristol Airport", "country": "United Kingdom", "lat": 51.3827, "lon": -2.7191, "flag": "🇬🇧"}, {"c": "EDI", "n": "Edinburgh", "a": "Edinburgh Airport", "country": "United Kingdom", "lat": 55.95, "lon": -3.3725, "flag": "🇬🇧"}, {"c": "GLA", "n": "Glasgow", "a": "Glasgow Airport", "country": "United Kingdom", "lat": 55.8719, "lon": -4.4331, "flag": "🇬🇧"}, {"c": "PIK", "n": "Glasgow Prestwick", "a": "Glasgow Prestwick Airport", "country": "United Kingdom", "lat": 55.5094, "lon": -4.5867, "flag": "🇬🇧"}, {"c": "NCL", "n": "Newcastle", "a": "Newcastle Airport", "country": "United Kingdom", "lat": 55.0375, "lon": -1.6917, "flag": "🇬🇧"}, {"c": "LPL", "n": "Liverpool", "a": "Liverpool Airport", "country": "United Kingdom", "lat": 53.3336, "lon": -2.8497, "flag": "🇬🇧"}, {"c": "EMA", "n": "East Midlands", "a": "East Midlands Airport", "country": "United Kingdom", "lat": 52.8311, "lon": -1.3281, "flag": "🇬🇧"}, {"c": "LBA", "n": "Leeds Bradford", "a": "Leeds Bradford Airport", "country": "United Kingdom", "lat": 53.8659, "lon": -1.6606, "flag": "🇬🇧"}, {"c": "CWL", "n": "Cardiff", "a": "Cardiff Airport", "country": "United Kingdom", "lat": 51.3967, "lon": -3.3433, "flag": "🇬🇧"}, {"c": "BOH", "n": "Bournemouth", "a": "Bournemouth Airport", "country": "United Kingdom", "lat": 50.7799, "lon": -1.8425, "flag": "🇬🇧"}, {"c": "SOU", "n": "Southampton", "a": "Southampton Airport", "country": "United Kingdom", "lat": 50.9503, "lon": -1.3568, "flag": "🇬🇧"}, {"c": "ABZ", "n": "Aberdeen", "a": "Aberdeen Airport", "country": "United Kingdom", "lat": 57.2019, "lon": -2.1978, "flag": "🇬🇧"}, {"c": "INV", "n": "Inverness", "a": "Inverness Airport", "country": "United Kingdom", "lat": 57.5425, "lon": -4.0475, "flag": "🇬🇧"}, {"c": "BFS", "n": "Belfast International", "a": "Belfast International Airport", "country": "United Kingdom", "lat": 54.6575, "lon": -6.2158, "flag": "🇬🇧"}, {"c": "BHD", "n": "Belfast City", "a": "Belfast City Airport", "country": "United Kingdom", "lat": 54.6181, "lon": -5.8725, "flag": "🇬🇧"}, {"c": "DUB", "n": "Dublin", "a": "Dublin Airport", "country": "Ireland", "lat": 53.4213, "lon": -6.2701, "flag": "🇮🇪"}, {"c": "ORK", "n": "Cork", "a": "Cork Airport", "country": "Ireland", "lat": 51.8413, "lon": -8.4911, "flag": "🇮🇪"}, {"c": "SNN", "n": "Shannon", "a": "Shannon Airport", "country": "Ireland", "lat": 52.702, "lon": -8.9248, "flag": "🇮🇪"}, {"c": "NOC", "n": "Knock", "a": "Knock Airport", "country": "Ireland", "lat": 53.9103, "lon": -8.8185, "flag": "🇮🇪"}, {"c": "KIR", "n": "Kerry", "a": "Kerry Airport", "country": "Ireland", "lat": 52.1809, "lon": -9.5238, "flag": "🇮🇪"}, {"c": "IST", "n": "Istanbul", "a": "Istanbul", "country": "Turkey", "lat": 41.2753, "lon": 28.7519, "flag": "🇹🇷"}, {"c": "SAW", "n": "Sabiha Gokcen", "a": "Sabiha Gokcen", "country": "Turkey", "lat": 40.8986, "lon": 29.3092, "flag": "🇹🇷"}, {"c": "AYT", "n": "Antalya", "a": "Antalya Airport", "country": "Turkey", "lat": 36.8987, "lon": 30.8005, "flag": "🇹🇷"}, {"c": "ADB", "n": "Izmir", "a": "Izmir Airport", "country": "Turkey", "lat": 38.2924, "lon": 27.157, "flag": "🇹🇷"}, {"c": "ESB", "n": "Ankara", "a": "Ankara Airport", "country": "Turkey", "lat": 40.1281, "lon": 32.9951, "flag": "🇹🇷"}, {"c": "DLM", "n": "Dalaman", "a": "Dalaman Airport", "country": "Turkey", "lat": 36.7131, "lon": 28.7925, "flag": "🇹🇷"}, {"c": "BJV", "n": "Bodrum", "a": "Bodrum Airport", "country": "Turkey", "lat": 37.2506, "lon": 27.6643, "flag": "🇹🇷"}, {"c": "TZX", "n": "Trabzon", "a": "Trabzon Airport", "country": "Turkey", "lat": 40.9951, "lon": 39.7897, "flag": "🇹🇷"}, {"c": "ADA", "n": "Adana", "a": "Adana Airport", "country": "Turkey", "lat": 36.9822, "lon": 35.2804, "flag": "🇹🇷"}, {"c": "ASR", "n": "Kayseri", "a": "Kayseri Airport", "country": "Turkey", "lat": 38.7704, "lon": 35.4954, "flag": "🇹🇷"}, {"c": "GZT", "n": "Gaziantep", "a": "Gaziantep Airport", "country": "Turkey", "lat": 36.9472, "lon": 37.4787, "flag": "🇹🇷"}, {"c": "DIY", "n": "Diyarbakir", "a": "Diyarbakir Airport", "country": "Turkey", "lat": 37.8939, "lon": 40.201, "flag": "🇹🇷"}, {"c": "ERZ", "n": "Erzurum", "a": "Erzurum Airport", "country": "Turkey", "lat": 39.9565, "lon": 41.1702, "flag": "🇹🇷"}, {"c": "VAN", "n": "Van", "a": "Van Airport", "country": "Turkey", "lat": 38.4682, "lon": 43.3323, "flag": "🇹🇷"}, {"c": "LCA", "n": "Larnaca", "a": "Larnaca Airport", "country": "Cyprus", "lat": 34.8751, "lon": 33.6249, "flag": "🇨🇾"}, {"c": "PFO", "n": "Paphos", "a": "Paphos Airport", "country": "Cyprus", "lat": 34.718, "lon": 32.4857, "flag": "🇨🇾"}, {"c": "CDG", "n": "Paris Charles de Gaulle", "a": "Paris Charles de Gaulle", "country": "France", "lat": 49.0097, "lon": 2.5479, "flag": "🇫🇷"}, {"c": "ORY", "n": "Paris Orly", "a": "Paris Orly", "country": "France", "lat": 48.7262, "lon": 2.3652, "flag": "🇫🇷"}, {"c": "BVA", "n": "Paris Beauvais", "a": "Paris Beauvais Airport", "country": "France", "lat": 49.4544, "lon": 2.1128, "flag": "🇫🇷"}, {"c": "NCE", "n": "Nice", "a": "Nice Airport", "country": "France", "lat": 43.6653, "lon": 7.215, "flag": "🇫🇷"}, {"c": "MRS", "n": "Marseille", "a": "Marseille Airport", "country": "France", "lat": 43.4393, "lon": 5.2214, "flag": "🇫🇷"}, {"c": "LYS", "n": "Lyon", "a": "Lyon Airport", "country": "France", "lat": 45.7256, "lon": 5.0811, "flag": "🇫🇷"}, {"c": "TLS", "n": "Toulouse", "a": "Toulouse Airport", "country": "France", "lat": 43.6293, "lon": 1.3638, "flag": "🇫🇷"}, {"c": "BOD", "n": "Bordeaux", "a": "Bordeaux Airport", "country": "France", "lat": 44.8283, "lon": -0.7156, "flag": "🇫🇷"}, {"c": "NTE", "n": "Nantes", "a": "Nantes Airport", "country": "France", "lat": 47.1532, "lon": -1.6107, "flag": "🇫🇷"}, {"c": "LIL", "n": "Lille", "a": "Lille Airport", "country": "France", "lat": 50.5619, "lon": 3.0894, "flag": "🇫🇷"}, {"c": "SXB", "n": "Strasbourg", "a": "Strasbourg Airport", "country": "France", "lat": 48.5383, "lon": 7.6282, "flag": "🇫🇷"}, {"c": "MPL", "n": "Montpellier", "a": "Montpellier Airport", "country": "France", "lat": 43.5762, "lon": 3.963, "flag": "🇫🇷"}, {"c": "AJA", "n": "Ajaccio", "a": "Ajaccio Airport", "country": "France", "lat": 41.9236, "lon": 8.8029, "flag": "🇫🇷"}, {"c": "BIA", "n": "Bastia", "a": "Bastia Airport", "country": "France", "lat": 42.5527, "lon": 9.4837, "flag": "🇫🇷"}, {"c": "AMS", "n": "Amsterdam Schiphol", "a": "Amsterdam Schiphol", "country": "Netherlands", "lat": 52.3105, "lon": 4.7683, "flag": "🇳🇱"}, {"c": "EIN", "n": "Eindhoven", "a": "Eindhoven Airport", "country": "Netherlands", "lat": 51.4501, "lon": 5.3745, "flag": "🇳🇱"}, {"c": "RTM", "n": "Rotterdam The Hague", "a": "Rotterdam The Hague Airport", "country": "Netherlands", "lat": 51.9569, "lon": 4.4372, "flag": "🇳🇱"}, {"c": "MST", "n": "Maastricht Aachen", "a": "Maastricht Aachen Airport", "country": "Netherlands", "lat": 50.9117, "lon": 5.7701, "flag": "🇳🇱"}, {"c": "BRU", "n": "Brussels", "a": "Brussels Airport", "country": "Belgium", "lat": 50.9014, "lon": 4.4844, "flag": "🇧🇪"}, {"c": "CRL", "n": "Brussels Charleroi", "a": "Brussels Charleroi Airport", "country": "Belgium", "lat": 50.4592, "lon": 4.4538, "flag": "🇧🇪"}, {"c": "ANR", "n": "Antwerp", "a": "Antwerp Airport", "country": "Belgium", "lat": 51.1894, "lon": 4.4603, "flag": "🇧🇪"}, {"c": "LUX", "n": "Luxembourg", "a": "Luxembourg Airport", "country": "Luxembourg", "lat": 49.6233, "lon": 6.2044, "flag": "🇱🇺"}, {"c": "FRA", "n": "Frankfurt", "a": "Frankfurt Airport", "country": "Germany", "lat": 50.0379, "lon": 8.5622, "flag": "🇩🇪"}, {"c": "MUC", "n": "Munich", "a": "Munich Airport", "country": "Germany", "lat": 48.3538, "lon": 11.7861, "flag": "🇩🇪"}, {"c": "BER", "n": "Berlin Brandenburg", "a": "Berlin Brandenburg Airport", "country": "Germany", "lat": 52.3667, "lon": 13.5033, "flag": "🇩🇪"}, {"c": "HAM", "n": "Hamburg", "a": "Hamburg Airport", "country": "Germany", "lat": 53.6304, "lon": 9.9882, "flag": "🇩🇪"}, {"c": "DUS", "n": "Dusseldorf", "a": "Dusseldorf Airport", "country": "Germany", "lat": 51.2895, "lon": 6.7668, "flag": "🇩🇪"}, {"c": "CGN", "n": "Cologne Bonn", "a": "Cologne Bonn Airport", "country": "Germany", "lat": 50.8659, "lon": 7.1427, "flag": "🇩🇪"}, {"c": "STR", "n": "Stuttgart", "a": "Stuttgart Airport", "country": "Germany", "lat": 48.6899, "lon": 9.2219, "flag": "🇩🇪"}, {"c": "HAJ", "n": "Hannover", "a": "Hannover Airport", "country": "Germany", "lat": 52.4611, "lon": 9.6851, "flag": "🇩🇪"}, {"c": "NUE", "n": "Nuremberg", "a": "Nuremberg Airport", "country": "Germany", "lat": 49.4987, "lon": 11.0781, "flag": "🇩🇪"}, {"c": "BRE", "n": "Bremen", "a": "Bremen Airport", "country": "Germany", "lat": 53.0475, "lon": 8.7867, "flag": "🇩🇪"}, {"c": "DRS", "n": "Dresden", "a": "Dresden Airport", "country": "Germany", "lat": 51.1328, "lon": 13.7672, "flag": "🇩🇪"}, {"c": "LEJ", "n": "Leipzig Halle", "a": "Leipzig Halle Airport", "country": "Germany", "lat": 51.4239, "lon": 12.2364, "flag": "🇩🇪"}, {"c": "FMM", "n": "Memmingen", "a": "Memmingen Airport", "country": "Germany", "lat": 47.9888, "lon": 10.2395, "flag": "🇩🇪"}, {"c": "DTM", "n": "Dortmund", "a": "Dortmund Airport", "country": "Germany", "lat": 51.5183, "lon": 7.6122, "flag": "🇩🇪"}, {"c": "VIE", "n": "Vienna", "a": "Vienna Airport", "country": "Austria", "lat": 48.1103, "lon": 16.5697, "flag": "🇦🇹"}, {"c": "SZG", "n": "Salzburg", "a": "Salzburg Airport", "country": "Austria", "lat": 47.7933, "lon": 13.0043, "flag": "🇦🇹"}, {"c": "INN", "n": "Innsbruck", "a": "Innsbruck Airport", "country": "Austria", "lat": 47.2602, "lon": 11.3439, "flag": "🇦🇹"}, {"c": "GRZ", "n": "Graz", "a": "Graz Airport", "country": "Austria", "lat": 46.9911, "lon": 15.4396, "flag": "🇦🇹"}, {"c": "LNZ", "n": "Linz", "a": "Linz Airport", "country": "Austria", "lat": 48.2332, "lon": 14.1875, "flag": "🇦🇹"}, {"c": "ZRH", "n": "Zurich", "a": "Zurich Airport", "country": "Switzerland", "lat": 47.4581, "lon": 8.5555, "flag": "🇨🇭"}, {"c": "GVA", "n": "Geneva", "a": "Geneva Airport", "country": "Switzerland", "lat": 46.2381, "lon": 6.109, "flag": "🇨🇭"}, {"c": "BSL", "n": "Basel", "a": "Basel Airport", "country": "Switzerland", "lat": 47.59, "lon": 7.5292, "flag": "🇨🇭"}, {"c": "BRN", "n": "Bern", "a": "Bern Airport", "country": "Switzerland", "lat": 46.9141, "lon": 7.4972, "flag": "🇨🇭"}, {"c": "MAD", "n": "Madrid Barajas", "a": "Madrid Barajas Airport", "country": "Spain", "lat": 40.4983, "lon": -3.5676, "flag": "🇪🇸"}, {"c": "BCN", "n": "Barcelona El Prat", "a": "Barcelona El Prat Airport", "country": "Spain", "lat": 41.2974, "lon": 2.0833, "flag": "🇪🇸"}, {"c": "AGP", "n": "Malaga", "a": "Malaga Airport", "country": "Spain", "lat": 36.6749, "lon": -4.4991, "flag": "🇪🇸"}, {"c": "ALC", "n": "Alicante", "a": "Alicante Airport", "country": "Spain", "lat": 38.2822, "lon": -0.5582, "flag": "🇪🇸"}, {"c": "PMI", "n": "Palma Mallorca", "a": "Palma Mallorca Airport", "country": "Spain", "lat": 39.5517, "lon": 2.7388, "flag": "🇪🇸"}, {"c": "VLC", "n": "Valencia", "a": "Valencia Airport", "country": "Spain", "lat": 39.4893, "lon": -0.4816, "flag": "🇪🇸"}, {"c": "SVQ", "n": "Seville", "a": "Seville Airport", "country": "Spain", "lat": 37.418, "lon": -5.8931, "flag": "🇪🇸"}, {"c": "BIO", "n": "Bilbao", "a": "Bilbao Airport", "country": "Spain", "lat": 43.3011, "lon": -2.9106, "flag": "🇪🇸"}, {"c": "IBZ", "n": "Ibiza", "a": "Ibiza Airport", "country": "Spain", "lat": 38.8729, "lon": 1.3731, "flag": "🇪🇸"}, {"c": "MAH", "n": "Menorca", "a": "Menorca Airport", "country": "Spain", "lat": 39.8626, "lon": 4.2186, "flag": "🇪🇸"}, {"c": "GRO", "n": "Girona", "a": "Girona Airport", "country": "Spain", "lat": 41.901, "lon": 2.7605, "flag": "🇪🇸"}, {"c": "REU", "n": "Reus", "a": "Reus Airport", "country": "Spain", "lat": 41.1474, "lon": 1.1672, "flag": "🇪🇸"}, {"c": "SCQ", "n": "Santiago", "a": "Santiago Airport", "country": "Spain", "lat": 42.8963, "lon": -8.4151, "flag": "🇪🇸"}, {"c": "LIS", "n": "Lisbon", "a": "Lisbon Airport", "country": "Portugal", "lat": 38.7742, "lon": -9.1342, "flag": "🇵🇹"}, {"c": "OPO", "n": "Porto", "a": "Porto Airport", "country": "Portugal", "lat": 41.2481, "lon": -8.6814, "flag": "🇵🇹"}, {"c": "FAO", "n": "Faro", "a": "Faro Airport", "country": "Portugal", "lat": 37.0144, "lon": -7.9659, "flag": "🇵🇹"}, {"c": "FNC", "n": "Madeira", "a": "Madeira Airport", "country": "Portugal", "lat": 32.6979, "lon": -16.7745, "flag": "🇵🇹"}, {"c": "PDL", "n": "Ponta Delgada", "a": "Ponta Delgada Airport", "country": "Portugal", "lat": 37.7412, "lon": -25.6979, "flag": "🇵🇹"}, {"c": "FCO", "n": "Rome Fiumicino", "a": "Rome Fiumicino Airport", "country": "Italy", "lat": 41.8003, "lon": 12.2389, "flag": "🇮🇹"}, {"c": "CIA", "n": "Rome Ciampino", "a": "Rome Ciampino Airport", "country": "Italy", "lat": 41.7994, "lon": 12.5949, "flag": "🇮🇹"}, {"c": "MXP", "n": "Milan Malpensa", "a": "Milan Malpensa Airport", "country": "Italy", "lat": 45.6306, "lon": 8.7281, "flag": "🇮🇹"}, {"c": "LIN", "n": "Milan Linate", "a": "Milan Linate Airport", "country": "Italy", "lat": 45.4451, "lon": 9.2767, "flag": "🇮🇹"}, {"c": "BGY", "n": "Milan Bergamo", "a": "Milan Bergamo Airport", "country": "Italy", "lat": 45.6739, "lon": 9.7042, "flag": "🇮🇹"}, {"c": "VCE", "n": "Venice", "a": "Venice Airport", "country": "Italy", "lat": 45.5053, "lon": 12.3519, "flag": "🇮🇹"}, {"c": "NAP", "n": "Naples", "a": "Naples Airport", "country": "Italy", "lat": 40.886, "lon": 14.2908, "flag": "🇮🇹"}, {"c": "BLQ", "n": "Bologna", "a": "Bologna Airport", "country": "Italy", "lat": 44.5354, "lon": 11.2887, "flag": "🇮🇹"}, {"c": "CTA", "n": "Catania", "a": "Catania Airport", "country": "Italy", "lat": 37.4668, "lon": 15.0664, "flag": "🇮🇹"}, {"c": "PMO", "n": "Palermo", "a": "Palermo Airport", "country": "Italy", "lat": 38.1759, "lon": 13.091, "flag": "🇮🇹"}, {"c": "PSA", "n": "Pisa", "a": "Pisa Airport", "country": "Italy", "lat": 43.6839, "lon": 10.3927, "flag": "🇮🇹"}, {"c": "FLR", "n": "Florence", "a": "Florence Airport", "country": "Italy", "lat": 43.81, "lon": 11.2051, "flag": "🇮🇹"}, {"c": "TRN", "n": "Turin", "a": "Turin Airport", "country": "Italy", "lat": 45.2008, "lon": 7.6496, "flag": "🇮🇹"}, {"c": "BRI", "n": "Bari", "a": "Bari Airport", "country": "Italy", "lat": 41.1389, "lon": 16.7606, "flag": "🇮🇹"}, {"c": "CAG", "n": "Cagliari", "a": "Cagliari Airport", "country": "Italy", "lat": 39.2515, "lon": 9.0543, "flag": "🇮🇹"}, {"c": "OLB", "n": "Olbia", "a": "Olbia Airport", "country": "Italy", "lat": 40.8987, "lon": 9.5176, "flag": "🇮🇹"}, {"c": "MLA", "n": "Malta", "a": "Malta Airport", "country": "Malta", "lat": 35.8575, "lon": 14.4775, "flag": "🇲🇹"}, {"c": "ATH", "n": "Athens", "a": "Athens Airport", "country": "Greece", "lat": 37.9364, "lon": 23.9445, "flag": "🇬🇷"}, {"c": "SKG", "n": "Thessaloniki", "a": "Thessaloniki Airport", "country": "Greece", "lat": 40.5197, "lon": 22.9709, "flag": "🇬🇷"}, {"c": "HER", "n": "Heraklion", "a": "Heraklion Airport", "country": "Greece", "lat": 35.3397, "lon": 25.1803, "flag": "🇬🇷"}, {"c": "RHO", "n": "Rhodes", "a": "Rhodes Airport", "country": "Greece", "lat": 36.4054, "lon": 28.0862, "flag": "🇬🇷"}, {"c": "CHQ", "n": "Chania", "a": "Chania Airport", "country": "Greece", "lat": 35.5317, "lon": 24.1497, "flag": "🇬🇷"}, {"c": "CFU", "n": "Corfu", "a": "Corfu Airport", "country": "Greece", "lat": 39.6019, "lon": 19.9117, "flag": "🇬🇷"}, {"c": "JTR", "n": "Santorini", "a": "Santorini Airport", "country": "Greece", "lat": 36.3992, "lon": 25.4793, "flag": "🇬🇷"}, {"c": "ZTH", "n": "Zakynthos", "a": "Zakynthos Airport", "country": "Greece", "lat": 37.7509, "lon": 20.8843, "flag": "🇬🇷"}, {"c": "KGS", "n": "Kos", "a": "Kos Airport", "country": "Greece", "lat": 36.7933, "lon": 27.0917, "flag": "🇬🇷"}, {"c": "CPH", "n": "Copenhagen", "a": "Copenhagen Airport", "country": "Denmark", "lat": 55.618, "lon": 12.656, "flag": "🇩🇰"}, {"c": "BLL", "n": "Billund", "a": "Billund Airport", "country": "Denmark", "lat": 55.7403, "lon": 9.1518, "flag": "🇩🇰"}, {"c": "AAL", "n": "Aalborg", "a": "Aalborg Airport", "country": "Denmark", "lat": 57.0928, "lon": 9.8492, "flag": "🇩🇰"}, {"c": "AAR", "n": "Aarhus", "a": "Aarhus Airport", "country": "Denmark", "lat": 56.3, "lon": 10.619, "flag": "🇩🇰"}, {"c": "OSL", "n": "Oslo Gardermoen", "a": "Oslo Gardermoen Airport", "country": "Norway", "lat": 60.1976, "lon": 11.1004, "flag": "🇳🇴"}, {"c": "TRF", "n": "Oslo Torp", "a": "Oslo Torp Airport", "country": "Norway", "lat": 59.1867, "lon": 10.2586, "flag": "🇳🇴"}, {"c": "BGO", "n": "Bergen", "a": "Bergen Airport", "country": "Norway", "lat": 60.2934, "lon": 5.2181, "flag": "🇳🇴"}, {"c": "SVG", "n": "Stavanger", "a": "Stavanger Airport", "country": "Norway", "lat": 58.8767, "lon": 5.6378, "flag": "🇳🇴"}, {"c": "TRD", "n": "Trondheim", "a": "Trondheim Airport", "country": "Norway", "lat": 63.4578, "lon": 10.9239, "flag": "🇳🇴"}, {"c": "TOS", "n": "Tromso", "a": "Tromso Airport", "country": "Norway", "lat": 69.6833, "lon": 18.9189, "flag": "🇳🇴"}, {"c": "ARN", "n": "Stockholm Arlanda", "a": "Stockholm Arlanda Airport", "country": "Sweden", "lat": 59.6498, "lon": 17.9238, "flag": "🇸🇪"}, {"c": "BMA", "n": "Stockholm Bromma", "a": "Stockholm Bromma Airport", "country": "Sweden", "lat": 59.3544, "lon": 17.9417, "flag": "🇸🇪"}, {"c": "NYO", "n": "Stockholm Skavsta", "a": "Stockholm Skavsta Airport", "country": "Sweden", "lat": 58.7886, "lon": 16.9122, "flag": "🇸🇪"}, {"c": "GOT", "n": "Gothenburg", "a": "Gothenburg Airport", "country": "Sweden", "lat": 57.6628, "lon": 12.2798, "flag": "🇸🇪"}, {"c": "MMX", "n": "Malmo", "a": "Malmo Airport", "country": "Sweden", "lat": 55.5363, "lon": 13.3762, "flag": "🇸🇪"}, {"c": "HEL", "n": "Helsinki", "a": "Helsinki Airport", "country": "Finland", "lat": 60.3172, "lon": 24.9633, "flag": "🇫🇮"}, {"c": "TMP", "n": "Tampere", "a": "Tampere Airport", "country": "Finland", "lat": 61.4141, "lon": 23.6044, "flag": "🇫🇮"}, {"c": "OUL", "n": "Oulu", "a": "Oulu Airport", "country": "Finland", "lat": 64.9301, "lon": 25.3546, "flag": "🇫🇮"}, {"c": "KEF", "n": "Reykjavik Keflavik", "a": "Reykjavik Keflavik Airport", "country": "Iceland", "lat": 63.985, "lon": -22.6056, "flag": "🇮🇸"}, {"c": "RKV", "n": "Reykjavik Domestic", "a": "Reykjavik Domestic Airport", "country": "Iceland", "lat": 64.13, "lon": -21.9406, "flag": "🇮🇸"}, {"c": "RIX", "n": "Riga", "a": "Riga Airport", "country": "Latvia", "lat": 56.9236, "lon": 23.9711, "flag": "🇱🇻"}, {"c": "TLL", "n": "Tallinn", "a": "Tallinn Airport", "country": "Estonia", "lat": 59.4133, "lon": 24.8328, "flag": "🇪🇪"}, {"c": "VNO", "n": "Vilnius", "a": "Vilnius Airport", "country": "Lithuania", "lat": 54.6341, "lon": 25.2858, "flag": "🇱🇹"}, {"c": "KUN", "n": "Kaunas", "a": "Kaunas Airport", "country": "Lithuania", "lat": 54.9639, "lon": 24.0848, "flag": "🇱🇹"}, {"c": "PLQ", "n": "Palanga", "a": "Palanga Airport", "country": "Lithuania", "lat": 55.9732, "lon": 21.0939, "flag": "🇱🇹"}, {"c": "WAW", "n": "Warsaw Chopin", "a": "Warsaw Chopin Airport", "country": "Poland", "lat": 52.1657, "lon": 20.9671, "flag": "🇵🇱"}, {"c": "KRK", "n": "Krakow", "a": "Krakow Airport", "country": "Poland", "lat": 50.0777, "lon": 19.7848, "flag": "🇵🇱"}, {"c": "GDN", "n": "Gdansk", "a": "Gdansk Airport", "country": "Poland", "lat": 54.3776, "lon": 18.4662, "flag": "🇵🇱"}, {"c": "WRO", "n": "Wroclaw", "a": "Wroclaw Airport", "country": "Poland", "lat": 51.1027, "lon": 16.8858, "flag": "🇵🇱"}, {"c": "KTW", "n": "Katowice", "a": "Katowice Airport", "country": "Poland", "lat": 50.4743, "lon": 19.08, "flag": "🇵🇱"}, {"c": "POZ", "n": "Poznan", "a": "Poznan Airport", "country": "Poland", "lat": 52.421, "lon": 16.8263, "flag": "🇵🇱"}, {"c": "PRG", "n": "Prague", "a": "Prague Airport", "country": "Czechia", "lat": 50.1008, "lon": 14.2632, "flag": "🇨🇿"}, {"c": "BRQ", "n": "Brno", "a": "Brno Airport", "country": "Czechia", "lat": 49.1513, "lon": 16.6944, "flag": "🇨🇿"}, {"c": "BUD", "n": "Budapest", "a": "Budapest Airport", "country": "Hungary", "lat": 47.4369, "lon": 19.2556, "flag": "🇭🇺"}, {"c": "DEB", "n": "Debrecen", "a": "Debrecen Airport", "country": "Hungary", "lat": 47.4889, "lon": 21.6153, "flag": "🇭🇺"}, {"c": "OTP", "n": "Bucharest", "a": "Bucharest Airport", "country": "Romania", "lat": 44.5711, "lon": 26.085, "flag": "🇷🇴"}, {"c": "CLJ", "n": "Cluj-Napoca", "a": "Cluj-Napoca Airport", "country": "Romania", "lat": 46.7852, "lon": 23.6862, "flag": "🇷🇴"}, {"c": "TSR", "n": "Timisoara", "a": "Timisoara Airport", "country": "Romania", "lat": 45.8099, "lon": 21.3379, "flag": "🇷🇴"}, {"c": "IAS", "n": "Iasi", "a": "Iasi Airport", "country": "Romania", "lat": 47.1785, "lon": 27.6206, "flag": "🇷🇴"}, {"c": "SOF", "n": "Sofia", "a": "Sofia Airport", "country": "Bulgaria", "lat": 42.6967, "lon": 23.4114, "flag": "🇧🇬"}, {"c": "VAR", "n": "Varna", "a": "Varna Airport", "country": "Bulgaria", "lat": 43.2321, "lon": 27.8251, "flag": "🇧🇬"}, {"c": "BOJ", "n": "Burgas", "a": "Burgas Airport", "country": "Bulgaria", "lat": 42.5696, "lon": 27.5152, "flag": "🇧🇬"}, {"c": "BEG", "n": "Belgrade", "a": "Belgrade Airport", "country": "Serbia", "lat": 44.8184, "lon": 20.3091, "flag": "🇷🇸"}, {"c": "INI", "n": "Nis", "a": "Nis Airport", "country": "Serbia", "lat": 43.3373, "lon": 21.8537, "flag": "🇷🇸"}, {"c": "ZAG", "n": "Zagreb", "a": "Zagreb Airport", "country": "Croatia", "lat": 45.7429, "lon": 16.0688, "flag": "🇭🇷"}, {"c": "SPU", "n": "Split", "a": "Split Airport", "country": "Croatia", "lat": 43.5389, "lon": 16.298, "flag": "🇭🇷"}, {"c": "DBV", "n": "Dubrovnik", "a": "Dubrovnik Airport", "country": "Croatia", "lat": 42.5614, "lon": 18.2682, "flag": "🇭🇷"}, {"c": "PUY", "n": "Pula", "a": "Pula Airport", "country": "Croatia", "lat": 44.8935, "lon": 13.9222, "flag": "🇭🇷"}, {"c": "LJU", "n": "Ljubljana", "a": "Ljubljana Airport", "country": "Slovenia", "lat": 46.2237, "lon": 14.4576, "flag": "🇸🇮"}, {"c": "TGD", "n": "Podgorica", "a": "Podgorica Airport", "country": "Montenegro", "lat": 42.3594, "lon": 19.2519, "flag": "🇲🇪"}, {"c": "TIV", "n": "Tivat", "a": "Tivat Airport", "country": "Montenegro", "lat": 42.4047, "lon": 18.7233, "flag": "🇲🇪"}, {"c": "TIA", "n": "Tirana", "a": "Tirana Airport", "country": "Albania", "lat": 41.4147, "lon": 19.7206, "flag": "🇦🇱"}, {"c": "SKP", "n": "Skopje", "a": "Skopje Airport", "country": "North Macedonia", "lat": 41.9616, "lon": 21.6214, "flag": "🇲🇰"}, {"c": "SJJ", "n": "Sarajevo", "a": "Sarajevo Airport", "country": "Bosnia", "lat": 43.8246, "lon": 18.3315, "flag": "🇧🇦"}, {"c": "PRN", "n": "Pristina", "a": "Pristina Airport", "country": "Kosovo", "lat": 42.5728, "lon": 21.0358, "flag": "🇽🇰"}, {"c": "DXB", "n": "Dubai", "a": "Dubai Airport", "country": "United Arab Emirates", "lat": 25.2532, "lon": 55.3657, "flag": "🇦🇪"}, {"c": "AUH", "n": "Abu Dhabi", "a": "Abu Dhabi Airport", "country": "United Arab Emirates", "lat": 24.433, "lon": 54.6511, "flag": "🇦🇪"}, {"c": "DOH", "n": "Doha", "a": "Doha Airport", "country": "Qatar", "lat": 25.2731, "lon": 51.6081, "flag": "🇶🇦"}, {"c": "JFK", "n": "New York JFK", "a": "New York JFK Airport", "country": "USA", "lat": 40.6413, "lon": -73.7781, "flag": "🇺🇸"}, {"c": "EWR", "n": "Newark", "a": "Newark Airport", "country": "USA", "lat": 40.6895, "lon": -74.1745, "flag": "🇺🇸"}, {"c": "YYZ", "n": "Toronto", "a": "Toronto Airport", "country": "Canada", "lat": 43.6777, "lon": -79.6248, "flag": "🇨🇦"}];
-let progress=.42, map, routeLine, planeMarker, startMarker, endMarker, startLabel, endLabel;
-function byCode(c){return airports.find(x=>x.c===c)}
-function km(a,b){const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLon=(b.lon-a.lon)*Math.PI/180,la1=a.lat*Math.PI/180,la2=b.lat*Math.PI/180,h=Math.sin(dLat/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)**2;return Math.round(R*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h)))}
-function bearing(a,b){let y=Math.sin((b.lon-a.lon)*Math.PI/180)*Math.cos(b.lat*Math.PI/180),x=Math.cos(a.lat*Math.PI/180)*Math.sin(b.lat*Math.PI/180)-Math.sin(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.cos((b.lon-a.lon)*Math.PI/180);return Math.round((Math.atan2(y,x)*180/Math.PI+360)%360)}
-function airportTimeZone(ap){const byCode={JFK:"America/New_York",EWR:"America/New_York",YYZ:"America/Toronto",DXB:"Asia/Dubai",AUH:"Asia/Dubai",DOH:"Asia/Qatar",PDL:"Atlantic/Azores",FNC:"Atlantic/Madeira",KEF:"Atlantic/Reykjavik",RKV:"Atlantic/Reykjavik",IST:"Europe/Istanbul",SAW:"Europe/Istanbul",AYT:"Europe/Istanbul",ADB:"Europe/Istanbul",ESB:"Europe/Istanbul",DLM:"Europe/Istanbul",BJV:"Europe/Istanbul",TZX:"Europe/Istanbul",ADA:"Europe/Istanbul",ASR:"Europe/Istanbul",GZT:"Europe/Istanbul",DIY:"Europe/Istanbul",ERZ:"Europe/Istanbul",VAN:"Europe/Istanbul"};const byCountry={"United Kingdom":"Europe/London",Ireland:"Europe/Dublin",France:"Europe/Paris",Netherlands:"Europe/Amsterdam",Belgium:"Europe/Brussels",Luxembourg:"Europe/Luxembourg",Germany:"Europe/Berlin",Austria:"Europe/Vienna",Switzerland:"Europe/Zurich",Spain:"Europe/Madrid",Portugal:"Europe/Lisbon",Italy:"Europe/Rome",Malta:"Europe/Malta",Greece:"Europe/Athens",Cyprus:"Asia/Nicosia",Denmark:"Europe/Copenhagen",Norway:"Europe/Oslo",Sweden:"Europe/Stockholm",Finland:"Europe/Helsinki",Iceland:"Atlantic/Reykjavik",Latvia:"Europe/Riga",Estonia:"Europe/Tallinn",Lithuania:"Europe/Vilnius",Poland:"Europe/Warsaw",Czechia:"Europe/Prague",Hungary:"Europe/Budapest",Romania:"Europe/Bucharest",Bulgaria:"Europe/Sofia",Serbia:"Europe/Belgrade",Croatia:"Europe/Zagreb",Slovenia:"Europe/Ljubljana",Montenegro:"Europe/Podgorica",Albania:"Europe/Tirane","North Macedonia":"Europe/Skopje",Bosnia:"Europe/Sarajevo",Kosovo:"Europe/Belgrade",USA:"America/New_York",Canada:"America/Toronto","United Arab Emirates":"Asia/Dubai",Qatar:"Asia/Qatar"};return byCode[ap.c]||byCountry[ap.country]||"UTC"}
-function partsInZone(date,tz){const f=new Intl.DateTimeFormat("en-GB",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"});const p=Object.fromEntries(f.formatToParts(date).map(x=>[x.type,x.value]));return {y:+p.year,m:+p.month,d:+p.day,h:+p.hour,min:+p.minute}}
-function localTimeToUtc(year,month,day,hour,minute,tz){let utc=new Date(Date.UTC(year,month-1,day,hour,minute));for(let i=0;i<3;i++){const p=partsInZone(utc,tz);const shown=Date.UTC(p.y,p.m-1,p.d,p.h,p.min);const wanted=Date.UTC(year,month-1,day,hour,minute);utc=new Date(utc.getTime()-(shown-wanted))}return utc}
-function formatInZone12(date,tz){try{return new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"2-digit",hour12:true,timeZone:tz}).format(date)}catch(e){return date.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",hour12:true})}}
-function formatDateInZone(date,tz){try{return new Intl.DateTimeFormat("en-GB",{weekday:"short",day:"2-digit",month:"short",timeZone:tz}).format(date)}catch(e){return ""}}
-function dayDiffInZones(depUtc,arrUtc,fromTz,toTz){const d1=partsInZone(depUtc,fromTz),d2=partsInZone(arrUtc,toTz);const a=Date.UTC(d1.y,d1.m-1,d1.d),b=Date.UTC(d2.y,d2.m-1,d2.d);return Math.round((b-a)/86400000)}
-function dayMarker(diff){return diff>0?" +"+diff:diff<0?" "+diff:""}
-function estimatedBlockHours(distanceKm,from,to){
-  // Realistic passenger block-time estimate.
-  // This is NOT a live airline schedule; it estimates gate-to-gate flying time.
-  // Short European flights need extra climb/descent/taxi time.
-  // Long-haul westbound flights need extra time for Atlantic routing/winds.
-  let block;
-  if(distanceKm < 700){
-    block = distanceKm / 620 + 0.55;
-  }else if(distanceKm < 1500){
-    block = distanceKm / 720 + 0.55;
-  }else if(distanceKm < 3500){
-    block = distanceKm / 820 + 0.55;
-  }else if(distanceKm < 6500){
-    block = distanceKm / 850 + 0.75;
-  }else{
-    block = distanceKm / 870 + 1.25;
-    if(to.lon < from.lon) block += 0.25;  // westbound long-haul allowance
-    else block += 0.05;                   // eastbound long-haul allowance
-  }
-  return block;
-}
-function getSavedDepartureLocal(){
-  const saved=localStorage.getItem("skyrouteDepartureLocal");
-  if(saved){
-    try{return JSON.parse(saved)}catch(e){}
-  }
-  return null;
-}
-function defaultDepartureLocal(from){
-  const tz=airportTimeZone(from);
-  const now=partsInZone(new Date(),tz);
-  return {y:now.y,m:now.m,d:now.d,h:17,min:5};
-}
-function scheduledDepartureUtc(from){
-  const tz=airportTimeZone(from);
-  const saved=getSavedDepartureLocal() || defaultDepartureLocal(from);
-  return localTimeToUtc(saved.y,saved.m,saved.d,saved.h,saved.min,tz);
-}
-function pad2(n){return String(n).padStart(2,"0")}
-function setDepartureInputs(from){
-  const saved=getSavedDepartureLocal() || defaultDepartureLocal(from);
-  const d=document.getElementById("depDateInput"), t=document.getElementById("depTimeInput");
-  if(d)d.value=`${saved.y}-${pad2(saved.m)}-${pad2(saved.d)}`;
-  if(t)t.value=`${pad2(saved.h)}:${pad2(saved.min)}`;
-}
-function saveDepartureTime(){
-  const d=document.getElementById("depDateInput"), t=document.getElementById("depTimeInput");
-  if(!d||!t||!d.value||!t.value)return;
-  const parts=d.value.split("-").map(Number), time=t.value.split(":").map(Number);
-  localStorage.setItem("skyrouteDepartureLocal",JSON.stringify({y:parts[0],m:parts[1],d:parts[2],h:time[0],min:time[1]}));
-  document.activeElement.blur();
-  drawRoute();
-  openFlightInfo(document.querySelector(".navbtn:nth-child(2)"));
-}
-function useNowDeparture(){
-  const from=byCode(document.getElementById("fromAirport").value);
-  const now=partsInZone(new Date(),airportTimeZone(from));
-  localStorage.setItem("skyrouteDepartureLocal",JSON.stringify({y:now.y,m:now.m,d:now.d,h:now.h,min:now.min}));
-  drawRoute();
-}
-function scheduledTimes(from,to,totalHours){
-  const fromTz=airportTimeZone(from), toTz=airportTimeZone(to);
-  const depUtc=scheduledDepartureUtc(from);
-  const arrUtc=new Date(depUtc.getTime()+totalHours*3600*1000);
-  const diff=dayDiffInZones(depUtc,arrUtc,fromTz,toTz);
-  return {
-    dep: formatInZone12(depUtc,fromTz)+" "+from.c,
-    arr: formatInZone12(arrUtc,toTz)+" "+to.c+dayMarker(diff),
-    depDate: formatDateInZone(depUtc,fromTz),
-    arrDate: formatDateInZone(arrUtc,toTz)+dayMarker(diff)
-  };
-}
-function fillSelects(){const f=document.getElementById("fromAirport"),t=document.getElementById("toAirport");airports.sort((a,b)=>a.country.localeCompare(b.country)||a.n.localeCompare(b.n)).forEach(ap=>{const label=`${ap.flag} ${ap.n} (${ap.c}) - ${ap.country}`;f.add(new Option(label,ap.c));t.add(new Option(label,ap.c))});f.value="LHR";t.value="IST";f.onchange=drawRoute;t.onchange=drawRoute}
-function initMap(){try{map=L.map('realMap',{zoomControl:false,attributionControl:false,worldCopyJump:true}).setView([47,12],3);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:10,minZoom:2,crossOrigin:true}).addTo(map);}catch(e){console.log(e)}}
-function iconHtml(html, cls){return L.divIcon({html:html,className:cls,iconSize:[30,30],iconAnchor:[15,15]})}
-function labelHtml(text){return L.divIcon({html:`<div class="airportLabel">${text}</div>`,className:'',iconSize:[80,24],iconAnchor:[40,35]})}
-function drawRoute(){
- const from=byCode(document.getElementById("fromAirport").value),to=byCode(document.getElementById("toAirport").value);
- document.getElementById("fromFlag").innerText=from.flag;document.getElementById("toFlag").innerText=to.flag;
- document.getElementById("fromName").innerText=`${from.n} (${from.c})`;document.getElementById("toName").innerText=`${to.n} (${to.c})`;
- document.getElementById("fromSub").innerText=from.a;document.getElementById("toSub").innerText=to.a;document.getElementById("fromCode").innerText=from.c;document.getElementById("toCode").innerText=to.c;
- document.getElementById("routeFrom").innerText=`${from.n} (${from.c})`;document.getElementById("routeTo").innerText=`${to.n} (${to.c})`;document.getElementById("routeFromSub").innerText=from.a;document.getElementById("routeToSub").innerText=to.a;
- if(map){[routeLine,planeMarker,startMarker,endMarker,startLabel,endLabel].forEach(x=>{if(x)map.removeLayer(x)});const a=[from.lat,from.lon], b=[to.lat,to.lon];routeLine=L.polyline([a,b],{color:'#55f24c',weight:5,opacity:.95}).addTo(map);startMarker=L.marker(a,{icon:iconHtml('<div class="airportDot"></div>','')}).addTo(map);endMarker=L.marker(b,{icon:iconHtml('<div class="airportDot end"></div>','')}).addTo(map);startLabel=L.marker(a,{icon:labelHtml(from.n.split(' ')[0])}).addTo(map);endLabel=L.marker(b,{icon:labelHtml(to.n.split(' ')[0])}).addTo(map);const lat=from.lat+(to.lat-from.lat)*progress, lon=from.lon+(to.lon-from.lon)*progress;planeMarker=L.marker([lat,lon],{icon:iconHtml('<div class="planeIcon">✈</div>','')}).addTo(map);fitRoute();}
- const total=km(from,to),remaining=Math.round(total*(1-progress)),duration=estimatedBlockHours(total,from,to),remainH=duration*(1-progress),doneH=duration*progress;
- document.getElementById("totalDistance").innerText=total.toLocaleString()+" km";document.getElementById("remaining").innerText=remaining.toLocaleString()+" km";document.getElementById("percent").innerText=Math.round(progress*100)+"%";document.getElementById("fill").style.width=Math.round(progress*100)+"%";document.getElementById("barPlane").style.left=Math.round(progress*100)+"%";document.getElementById("heading").innerText=String(bearing(from,to)).padStart(3,"0")+"°";
- const rh=Math.floor(remainH),rm=Math.round((remainH%1)*60),dh=Math.floor(doneH),dm=Math.round((doneH%1)*60);
- document.getElementById("eta").innerText=`${rh}h ${String(rm).padStart(2,"0")}m`;document.getElementById("remainTime").innerText=`Remaining ${String(rh).padStart(2,"0")}h ${String(rm).padStart(2,"0")}m`;document.getElementById("flightTime").innerText=`${String(dh).padStart(2,"0")}h ${String(dm).padStart(2,"0")}m`;
- const times=scheduledTimes(from,to,duration);
- document.getElementById("depTime").innerText=times.dep;
- document.getElementById("routeDep").innerText=times.dep;
- document.getElementById("arrTime").innerText=times.arr;
- document.getElementById("routeArr").innerText=times.arr;
- document.getElementById("routeFromSub").innerText=from.a+" • "+times.depDate;
- document.getElementById("routeToSub").innerText=to.a+" • "+times.arrDate;
- updateFlightInfoModal(from,to,total,remaining,duration,remainH,times);
-}
-function fitRoute(){if(routeLine&&map)map.fitBounds(routeLine.getBounds(),{padding:[45,45],maxZoom:5})}
-function zoomIn(){if(map)map.zoomIn()}function zoomOut(){if(map)map.zoomOut()}
-function swapAirports(){const f=document.getElementById("fromAirport"),t=document.getElementById("toAirport"),v=f.value;f.value=t.value;t.value=v;drawRoute()}
-function goTab(sectionId,el){
-  document.querySelectorAll(".navbtn").forEach(b=>b.classList.remove("active"));
-  if(el) el.classList.add("active");
-  const target=document.getElementById(sectionId);
-  if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
-}
+        const fixtures = [
+            {
+                        "num": 1,
+                        "date": "2026-06-11",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-11T19:00:00Z",
+                        "home": "Mexico",
+                        "away": "South Africa",
+                        "stage": "Group A",
+                        "city": "Mexico City",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 2,
+                        "date": "2026-06-11",
+                        "easternTime": "22:00",
+                        "utc": "2026-06-12T02:00:00Z",
+                        "home": "South Korea",
+                        "away": "Czechia",
+                        "stage": "Group A",
+                        "city": "Guadalajara",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 3,
+                        "date": "2026-06-12",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-12T19:00:00Z",
+                        "home": "Canada",
+                        "away": "Bosnia and Herzegovina",
+                        "stage": "Group B",
+                        "city": "Toronto",
+                        "venueTimeZone": "America/Toronto"
+            },
+            {
+                        "num": 4,
+                        "date": "2026-06-12",
+                        "easternTime": "21:00",
+                        "utc": "2026-06-13T01:00:00Z",
+                        "home": "United States",
+                        "away": "Paraguay",
+                        "stage": "Group D",
+                        "city": "Los Angeles",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 5,
+                        "date": "2026-06-13",
+                        "easternTime": "21:00",
+                        "utc": "2026-06-14T01:00:00Z",
+                        "home": "Haiti",
+                        "away": "Scotland",
+                        "stage": "Group C",
+                        "city": "Boston",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 6,
+                        "date": "2026-06-13",
+                        "easternTime": "00:00",
+                        "utc": "2026-06-13T04:00:00Z",
+                        "home": "Australia",
+                        "away": "Türkiye",
+                        "stage": "Group D",
+                        "city": "Vancouver",
+                        "venueTimeZone": "America/Vancouver"
+            },
+            {
+                        "num": 7,
+                        "date": "2026-06-13",
+                        "easternTime": "18:00",
+                        "utc": "2026-06-13T22:00:00Z",
+                        "home": "Brazil",
+                        "away": "Morocco",
+                        "stage": "Group C",
+                        "city": "New Jersey",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 8,
+                        "date": "2026-06-13",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-13T19:00:00Z",
+                        "home": "Qatar",
+                        "away": "Switzerland",
+                        "stage": "Group B",
+                        "city": "Santa Clara",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 9,
+                        "date": "2026-06-14",
+                        "easternTime": "19:00",
+                        "utc": "2026-06-14T23:00:00Z",
+                        "home": "Côte d’Ivoire",
+                        "away": "Ecuador",
+                        "stage": "Group E",
+                        "city": "Philadelphia",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 10,
+                        "date": "2026-06-14",
+                        "easternTime": "13:00",
+                        "utc": "2026-06-14T17:00:00Z",
+                        "home": "Germany",
+                        "away": "Curaçao",
+                        "stage": "Group E",
+                        "city": "Houston",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 11,
+                        "date": "2026-06-14",
+                        "easternTime": "16:00",
+                        "utc": "2026-06-14T20:00:00Z",
+                        "home": "Netherlands",
+                        "away": "Japan",
+                        "stage": "Group F",
+                        "city": "Dallas",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 12,
+                        "date": "2026-06-14",
+                        "easternTime": "22:00",
+                        "utc": "2026-06-15T02:00:00Z",
+                        "home": "Sweden",
+                        "away": "Tunisia",
+                        "stage": "Group F",
+                        "city": "Monterrey",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 13,
+                        "date": "2026-06-15",
+                        "easternTime": "18:00",
+                        "utc": "2026-06-15T22:00:00Z",
+                        "home": "Saudi Arabia",
+                        "away": "Uruguay",
+                        "stage": "Group H",
+                        "city": "Miami",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 14,
+                        "date": "2026-06-15",
+                        "easternTime": "12:00",
+                        "utc": "2026-06-15T16:00:00Z",
+                        "home": "Spain",
+                        "away": "Cabo Verde",
+                        "stage": "Group H",
+                        "city": "Atlanta",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 15,
+                        "date": "2026-06-15",
+                        "easternTime": "21:00",
+                        "utc": "2026-06-16T01:00:00Z",
+                        "home": "Iran",
+                        "away": "New Zealand",
+                        "stage": "Group G",
+                        "city": "Los Angeles",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 16,
+                        "date": "2026-06-15",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-15T19:00:00Z",
+                        "home": "Belgium",
+                        "away": "Egypt",
+                        "stage": "Group G",
+                        "city": "Seattle",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 17,
+                        "date": "2026-06-16",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-16T19:00:00Z",
+                        "home": "France",
+                        "away": "Senegal",
+                        "stage": "Group I",
+                        "city": "New Jersey",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 18,
+                        "date": "2026-06-16",
+                        "easternTime": "18:00",
+                        "utc": "2026-06-16T22:00:00Z",
+                        "home": "Iraq",
+                        "away": "Norway",
+                        "stage": "Group I",
+                        "city": "Boston",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 19,
+                        "date": "2026-06-16",
+                        "easternTime": "21:00",
+                        "utc": "2026-06-17T01:00:00Z",
+                        "home": "Argentina",
+                        "away": "Algeria",
+                        "stage": "Group J",
+                        "city": "Kansas City",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 20,
+                        "date": "2026-06-16",
+                        "easternTime": "00:00",
+                        "utc": "2026-06-16T04:00:00Z",
+                        "home": "Austria",
+                        "away": "Jordan",
+                        "stage": "Group J",
+                        "city": "Santa Clara",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 21,
+                        "date": "2026-06-17",
+                        "easternTime": "19:00",
+                        "utc": "2026-06-17T23:00:00Z",
+                        "home": "Ghana",
+                        "away": "Panama",
+                        "stage": "Group L",
+                        "city": "Toronto",
+                        "venueTimeZone": "America/Toronto"
+            },
+            {
+                        "num": 22,
+                        "date": "2026-06-17",
+                        "easternTime": "16:00",
+                        "utc": "2026-06-17T20:00:00Z",
+                        "home": "England",
+                        "away": "Croatia",
+                        "stage": "Group L",
+                        "city": "Dallas",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 23,
+                        "date": "2026-06-17",
+                        "easternTime": "13:00",
+                        "utc": "2026-06-17T17:00:00Z",
+                        "home": "Portugal",
+                        "away": "Congo DR",
+                        "stage": "Group K",
+                        "city": "Houston",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 24,
+                        "date": "2026-06-17",
+                        "easternTime": "22:00",
+                        "utc": "2026-06-18T02:00:00Z",
+                        "home": "Uzbekistan",
+                        "away": "Colombia",
+                        "stage": "Group K",
+                        "city": "Mexico City",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 25,
+                        "date": "2026-06-18",
+                        "easternTime": "12:00",
+                        "utc": "2026-06-18T16:00:00Z",
+                        "home": "Czechia",
+                        "away": "South Africa",
+                        "stage": "Group A",
+                        "city": "Atlanta",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 26,
+                        "date": "2026-06-18",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-18T19:00:00Z",
+                        "home": "Switzerland",
+                        "away": "Bosnia and Herzegovina",
+                        "stage": "Group B",
+                        "city": "Los Angeles",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 27,
+                        "date": "2026-06-18",
+                        "easternTime": "18:00",
+                        "utc": "2026-06-18T22:00:00Z",
+                        "home": "Canada",
+                        "away": "Qatar",
+                        "stage": "Group B",
+                        "city": "Vancouver",
+                        "venueTimeZone": "America/Vancouver"
+            },
+            {
+                        "num": 28,
+                        "date": "2026-06-18",
+                        "easternTime": "23:00",
+                        "utc": "2026-06-19T03:00:00Z",
+                        "home": "Mexico",
+                        "away": "South Korea",
+                        "stage": "Group A",
+                        "city": "Guadalajara",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 29,
+                        "date": "2026-06-19",
+                        "easternTime": "21:00",
+                        "utc": "2026-06-20T01:00:00Z",
+                        "home": "Brazil",
+                        "away": "Haiti",
+                        "stage": "Group C",
+                        "city": "Philadelphia",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 30,
+                        "date": "2026-06-19",
+                        "easternTime": "18:00",
+                        "utc": "2026-06-19T22:00:00Z",
+                        "home": "Scotland",
+                        "away": "Morocco",
+                        "stage": "Group C",
+                        "city": "Boston",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 31,
+                        "date": "2026-06-20",
+                        "easternTime": "00:00",
+                        "utc": "2026-06-20T04:00:00Z",
+                        "home": "Türkiye",
+                        "away": "Paraguay",
+                        "stage": "Group D",
+                        "city": "Santa Clara",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 32,
+                        "date": "2026-06-19",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-19T19:00:00Z",
+                        "home": "United States",
+                        "away": "Australia",
+                        "stage": "Group D",
+                        "city": "Seattle",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 33,
+                        "date": "2026-06-20",
+                        "easternTime": "16:00",
+                        "utc": "2026-06-20T20:00:00Z",
+                        "home": "Germany",
+                        "away": "Côte d’Ivoire",
+                        "stage": "Group E",
+                        "city": "Toronto",
+                        "venueTimeZone": "America/Toronto"
+            },
+            {
+                        "num": 34,
+                        "date": "2026-06-20",
+                        "easternTime": "20:00",
+                        "utc": "2026-06-21T00:00:00Z",
+                        "home": "Ecuador",
+                        "away": "Curaçao",
+                        "stage": "Group E",
+                        "city": "Kansas City",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 35,
+                        "date": "2026-06-20",
+                        "easternTime": "13:00",
+                        "utc": "2026-06-20T17:00:00Z",
+                        "home": "Netherlands",
+                        "away": "Sweden",
+                        "stage": "Group F",
+                        "city": "Houston",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 36,
+                        "date": "2026-06-21",
+                        "easternTime": "00:00",
+                        "utc": "2026-06-21T04:00:00Z",
+                        "home": "Tunisia",
+                        "away": "Japan",
+                        "stage": "Group F",
+                        "city": "Monterrey",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 37,
+                        "date": "2026-06-21",
+                        "easternTime": "18:00",
+                        "utc": "2026-06-21T22:00:00Z",
+                        "home": "Uruguay",
+                        "away": "Cabo Verde",
+                        "stage": "Group H",
+                        "city": "Miami",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 38,
+                        "date": "2026-06-21",
+                        "easternTime": "12:00",
+                        "utc": "2026-06-21T16:00:00Z",
+                        "home": "Spain",
+                        "away": "Saudi Arabia",
+                        "stage": "Group H",
+                        "city": "Atlanta",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 39,
+                        "date": "2026-06-21",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-21T19:00:00Z",
+                        "home": "Belgium",
+                        "away": "Iran",
+                        "stage": "Group G",
+                        "city": "Los Angeles",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 40,
+                        "date": "2026-06-21",
+                        "easternTime": "21:00",
+                        "utc": "2026-06-22T01:00:00Z",
+                        "home": "New Zealand",
+                        "away": "Egypt",
+                        "stage": "Group G",
+                        "city": "Vancouver",
+                        "venueTimeZone": "America/Vancouver"
+            },
+            {
+                        "num": 41,
+                        "date": "2026-06-22",
+                        "easternTime": "20:00",
+                        "utc": "2026-06-23T00:00:00Z",
+                        "home": "Norway",
+                        "away": "Senegal",
+                        "stage": "Group I",
+                        "city": "New Jersey",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 42,
+                        "date": "2026-06-22",
+                        "easternTime": "17:00",
+                        "utc": "2026-06-22T21:00:00Z",
+                        "home": "France",
+                        "away": "Iraq",
+                        "stage": "Group I",
+                        "city": "Philadelphia",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 43,
+                        "date": "2026-06-22",
+                        "easternTime": "13:00",
+                        "utc": "2026-06-22T17:00:00Z",
+                        "home": "Argentina",
+                        "away": "Austria",
+                        "stage": "Group J",
+                        "city": "Dallas",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 44,
+                        "date": "2026-06-22",
+                        "easternTime": "23:00",
+                        "utc": "2026-06-23T03:00:00Z",
+                        "home": "Jordan",
+                        "away": "Algeria",
+                        "stage": "Group J",
+                        "city": "Santa Clara",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 45,
+                        "date": "2026-06-23",
+                        "easternTime": "16:00",
+                        "utc": "2026-06-23T20:00:00Z",
+                        "home": "England",
+                        "away": "Ghana",
+                        "stage": "Group L",
+                        "city": "Boston",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 46,
+                        "date": "2026-06-23",
+                        "easternTime": "19:00",
+                        "utc": "2026-06-23T23:00:00Z",
+                        "home": "Panama",
+                        "away": "Croatia",
+                        "stage": "Group L",
+                        "city": "Toronto",
+                        "venueTimeZone": "America/Toronto"
+            },
+            {
+                        "num": 47,
+                        "date": "2026-06-23",
+                        "easternTime": "13:00",
+                        "utc": "2026-06-23T17:00:00Z",
+                        "home": "Portugal",
+                        "away": "Uzbekistan",
+                        "stage": "Group K",
+                        "city": "Houston",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 48,
+                        "date": "2026-06-23",
+                        "easternTime": "22:00",
+                        "utc": "2026-06-24T02:00:00Z",
+                        "home": "Colombia",
+                        "away": "Congo DR",
+                        "stage": "Group K",
+                        "city": "Guadalajara",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 49,
+                        "date": "2026-06-24",
+                        "easternTime": "18:00",
+                        "utc": "2026-06-24T22:00:00Z",
+                        "home": "Scotland",
+                        "away": "Brazil",
+                        "stage": "Group C",
+                        "city": "Miami",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 50,
+                        "date": "2026-06-24",
+                        "easternTime": "18:00",
+                        "utc": "2026-06-24T22:00:00Z",
+                        "home": "Morocco",
+                        "away": "Haiti",
+                        "stage": "Group C",
+                        "city": "Atlanta",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 51,
+                        "date": "2026-06-24",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-24T19:00:00Z",
+                        "home": "Switzerland",
+                        "away": "Canada",
+                        "stage": "Group B",
+                        "city": "Vancouver",
+                        "venueTimeZone": "America/Vancouver"
+            },
+            {
+                        "num": 52,
+                        "date": "2026-06-24",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-24T19:00:00Z",
+                        "home": "Bosnia and Herzegovina",
+                        "away": "Qatar",
+                        "stage": "Group B",
+                        "city": "Seattle",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 53,
+                        "date": "2026-06-24",
+                        "easternTime": "21:00",
+                        "utc": "2026-06-25T01:00:00Z",
+                        "home": "Czechia",
+                        "away": "Mexico",
+                        "stage": "Group A",
+                        "city": "Mexico City",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 54,
+                        "date": "2026-06-24",
+                        "easternTime": "21:00",
+                        "utc": "2026-06-25T01:00:00Z",
+                        "home": "South Africa",
+                        "away": "South Korea",
+                        "stage": "Group A",
+                        "city": "Monterrey",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 55,
+                        "date": "2026-06-25",
+                        "easternTime": "16:00",
+                        "utc": "2026-06-25T20:00:00Z",
+                        "home": "Curaçao",
+                        "away": "Côte d’Ivoire",
+                        "stage": "Group E",
+                        "city": "Philadelphia",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 56,
+                        "date": "2026-06-25",
+                        "easternTime": "16:00",
+                        "utc": "2026-06-25T20:00:00Z",
+                        "home": "Ecuador",
+                        "away": "Germany",
+                        "stage": "Group E",
+                        "city": "New Jersey",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 57,
+                        "date": "2026-06-25",
+                        "easternTime": "19:00",
+                        "utc": "2026-06-25T23:00:00Z",
+                        "home": "Japan",
+                        "away": "Sweden",
+                        "stage": "Group F",
+                        "city": "Dallas",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 58,
+                        "date": "2026-06-25",
+                        "easternTime": "19:00",
+                        "utc": "2026-06-25T23:00:00Z",
+                        "home": "Tunisia",
+                        "away": "Netherlands",
+                        "stage": "Group F",
+                        "city": "Kansas City",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 59,
+                        "date": "2026-06-25",
+                        "easternTime": "22:00",
+                        "utc": "2026-06-26T02:00:00Z",
+                        "home": "Türkiye",
+                        "away": "United States",
+                        "stage": "Group D",
+                        "city": "Los Angeles",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 60,
+                        "date": "2026-06-25",
+                        "easternTime": "22:00",
+                        "utc": "2026-06-26T02:00:00Z",
+                        "home": "Paraguay",
+                        "away": "Australia",
+                        "stage": "Group D",
+                        "city": "Santa Clara",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 61,
+                        "date": "2026-06-26",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-26T19:00:00Z",
+                        "home": "Norway",
+                        "away": "France",
+                        "stage": "Group I",
+                        "city": "Boston",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 62,
+                        "date": "2026-06-26",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-26T19:00:00Z",
+                        "home": "Senegal",
+                        "away": "Iraq",
+                        "stage": "Group I",
+                        "city": "Toronto",
+                        "venueTimeZone": "America/Toronto"
+            },
+            {
+                        "num": 63,
+                        "date": "2026-06-26",
+                        "easternTime": "23:00",
+                        "utc": "2026-06-27T03:00:00Z",
+                        "home": "Egypt",
+                        "away": "Iran",
+                        "stage": "Group G",
+                        "city": "Seattle",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 64,
+                        "date": "2026-06-26",
+                        "easternTime": "23:00",
+                        "utc": "2026-06-27T03:00:00Z",
+                        "home": "New Zealand",
+                        "away": "Belgium",
+                        "stage": "Group G",
+                        "city": "Vancouver",
+                        "venueTimeZone": "America/Vancouver"
+            },
+            {
+                        "num": 65,
+                        "date": "2026-06-26",
+                        "easternTime": "20:00",
+                        "utc": "2026-06-27T00:00:00Z",
+                        "home": "Cabo Verde",
+                        "away": "Saudi Arabia",
+                        "stage": "Group H",
+                        "city": "Houston",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 66,
+                        "date": "2026-06-26",
+                        "easternTime": "20:00",
+                        "utc": "2026-06-27T00:00:00Z",
+                        "home": "Uruguay",
+                        "away": "Spain",
+                        "stage": "Group H",
+                        "city": "Guadalajara",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 67,
+                        "date": "2026-06-27",
+                        "easternTime": "17:00",
+                        "utc": "2026-06-27T21:00:00Z",
+                        "home": "Panama",
+                        "away": "England",
+                        "stage": "Group L",
+                        "city": "New Jersey",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 68,
+                        "date": "2026-06-27",
+                        "easternTime": "17:00",
+                        "utc": "2026-06-27T21:00:00Z",
+                        "home": "Croatia",
+                        "away": "Ghana",
+                        "stage": "Group L",
+                        "city": "Philadelphia",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 69,
+                        "date": "2026-06-27",
+                        "easternTime": "22:00",
+                        "utc": "2026-06-28T02:00:00Z",
+                        "home": "Algeria",
+                        "away": "Austria",
+                        "stage": "Group J",
+                        "city": "Kansas City",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 70,
+                        "date": "2026-06-27",
+                        "easternTime": "22:00",
+                        "utc": "2026-06-28T02:00:00Z",
+                        "home": "Jordan",
+                        "away": "Argentina",
+                        "stage": "Group J",
+                        "city": "Dallas",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 71,
+                        "date": "2026-06-27",
+                        "easternTime": "19:30",
+                        "utc": "2026-06-27T23:30:00Z",
+                        "home": "Colombia",
+                        "away": "Portugal",
+                        "stage": "Group K",
+                        "city": "Miami",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 72,
+                        "date": "2026-06-27",
+                        "easternTime": "19:30",
+                        "utc": "2026-06-27T23:30:00Z",
+                        "home": "Congo DR",
+                        "away": "Uzbekistan",
+                        "stage": "Group K",
+                        "city": "Atlanta",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 73,
+                        "date": "2026-06-28",
+                        "easternTime": "15:00",
+                        "utc": "2026-06-28T19:00:00Z",
+                        "home": "Group A Runner-Up",
+                        "away": "Group B Runner-Up",
+                        "stage": "Round of 32",
+                        "city": "Los Angeles",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 74,
+                        "date": "2026-06-29",
+                        "easternTime": "16:30",
+                        "utc": "2026-06-29T20:30:00Z",
+                        "home": "Group E Winner",
+                        "away": "Best 3rd Place",
+                        "stage": "Round of 32",
+                        "city": "Boston",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 75,
+                        "date": "2026-06-29",
+                        "easternTime": "21:00",
+                        "utc": "2026-06-30T01:00:00Z",
+                        "home": "Group F Winner",
+                        "away": "Group C Runner-Up",
+                        "stage": "Round of 32",
+                        "city": "Monterrey",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 76,
+                        "date": "2026-06-29",
+                        "easternTime": "13:00",
+                        "utc": "2026-06-29T17:00:00Z",
+                        "home": "Group C Winner",
+                        "away": "Group F Runner-Up",
+                        "stage": "Round of 32",
+                        "city": "Houston",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 77,
+                        "date": "2026-06-30",
+                        "easternTime": "17:00",
+                        "utc": "2026-06-30T21:00:00Z",
+                        "home": "Group I Winner",
+                        "away": "Best 3rd Place",
+                        "stage": "Round of 32",
+                        "city": "New Jersey",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 78,
+                        "date": "2026-06-30",
+                        "easternTime": "13:00",
+                        "utc": "2026-06-30T17:00:00Z",
+                        "home": "Group E Runner-Up",
+                        "away": "Group I Runner-Up",
+                        "stage": "Round of 32",
+                        "city": "Dallas",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 79,
+                        "date": "2026-06-30",
+                        "easternTime": "21:00",
+                        "utc": "2026-07-01T01:00:00Z",
+                        "home": "Group A Winner",
+                        "away": "Best 3rd Place",
+                        "stage": "Round of 32",
+                        "city": "Mexico City",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 80,
+                        "date": "2026-07-01",
+                        "easternTime": "12:00",
+                        "utc": "2026-07-01T16:00:00Z",
+                        "home": "Group L Winner",
+                        "away": "Best 3rd Place",
+                        "stage": "Round of 32",
+                        "city": "Atlanta",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 81,
+                        "date": "2026-07-01",
+                        "easternTime": "20:00",
+                        "utc": "2026-07-02T00:00:00Z",
+                        "home": "Group D Winner",
+                        "away": "Best 3rd Place",
+                        "stage": "Round of 32",
+                        "city": "Santa Clara",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 82,
+                        "date": "2026-07-01",
+                        "easternTime": "16:00",
+                        "utc": "2026-07-01T20:00:00Z",
+                        "home": "Group G Winner",
+                        "away": "Best 3rd Place",
+                        "stage": "Round of 32",
+                        "city": "Seattle",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 83,
+                        "date": "2026-07-02",
+                        "easternTime": "19:00",
+                        "utc": "2026-07-02T23:00:00Z",
+                        "home": "Group K Runner-Up",
+                        "away": "Group L Runner-Up",
+                        "stage": "Round of 32",
+                        "city": "Toronto",
+                        "venueTimeZone": "America/Toronto"
+            },
+            {
+                        "num": 84,
+                        "date": "2026-07-02",
+                        "easternTime": "15:00",
+                        "utc": "2026-07-02T19:00:00Z",
+                        "home": "Group H Winner",
+                        "away": "Group J Runner-Up",
+                        "stage": "Round of 32",
+                        "city": "Los Angeles",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 85,
+                        "date": "2026-07-02",
+                        "easternTime": "23:00",
+                        "utc": "2026-07-03T03:00:00Z",
+                        "home": "Group B Winner",
+                        "away": "Best 3rd Place",
+                        "stage": "Round of 32",
+                        "city": "Vancouver",
+                        "venueTimeZone": "America/Vancouver"
+            },
+            {
+                        "num": 86,
+                        "date": "2026-07-03",
+                        "easternTime": "18:00",
+                        "utc": "2026-07-03T22:00:00Z",
+                        "home": "Group J Winner",
+                        "away": "Group H Runner-Up",
+                        "stage": "Round of 32",
+                        "city": "Miami",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 87,
+                        "date": "2026-07-03",
+                        "easternTime": "21:30",
+                        "utc": "2026-07-04T01:30:00Z",
+                        "home": "Group K Winner",
+                        "away": "Best 3rd Place",
+                        "stage": "Round of 32",
+                        "city": "Kansas City",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 88,
+                        "date": "2026-07-03",
+                        "easternTime": "14:00",
+                        "utc": "2026-07-03T18:00:00Z",
+                        "home": "Group D Runner-Up",
+                        "away": "Group G Runner-Up",
+                        "stage": "Round of 32",
+                        "city": "Dallas",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 89,
+                        "date": "2026-07-04",
+                        "easternTime": "17:00",
+                        "utc": "2026-07-04T21:00:00Z",
+                        "home": "Winner Match 74",
+                        "away": "Winner Match 77",
+                        "stage": "Round of 16",
+                        "city": "Philadelphia",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 90,
+                        "date": "2026-07-04",
+                        "easternTime": "13:00",
+                        "utc": "2026-07-04T17:00:00Z",
+                        "home": "Winner Match 73",
+                        "away": "Winner Match 75",
+                        "stage": "Round of 16",
+                        "city": "Houston",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 91,
+                        "date": "2026-07-05",
+                        "easternTime": "16:00",
+                        "utc": "2026-07-05T20:00:00Z",
+                        "home": "Winner Match 76",
+                        "away": "Winner Match 78",
+                        "stage": "Round of 16",
+                        "city": "New Jersey",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 92,
+                        "date": "2026-07-05",
+                        "easternTime": "20:00",
+                        "utc": "2026-07-06T00:00:00Z",
+                        "home": "Winner Match 79",
+                        "away": "Winner Match 80",
+                        "stage": "Round of 16",
+                        "city": "Mexico City",
+                        "venueTimeZone": "America/Mexico_City"
+            },
+            {
+                        "num": 93,
+                        "date": "2026-07-06",
+                        "easternTime": "15:00",
+                        "utc": "2026-07-06T19:00:00Z",
+                        "home": "Winner Match 83",
+                        "away": "Winner Match 84",
+                        "stage": "Round of 16",
+                        "city": "Dallas",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 94,
+                        "date": "2026-07-06",
+                        "easternTime": "20:00",
+                        "utc": "2026-07-07T00:00:00Z",
+                        "home": "Winner Match 81",
+                        "away": "Winner Match 82",
+                        "stage": "Round of 16",
+                        "city": "Seattle",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 95,
+                        "date": "2026-07-07",
+                        "easternTime": "12:00",
+                        "utc": "2026-07-07T16:00:00Z",
+                        "home": "Winner Match 86",
+                        "away": "Winner Match 88",
+                        "stage": "Round of 16",
+                        "city": "Atlanta",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 96,
+                        "date": "2026-07-07",
+                        "easternTime": "16:00",
+                        "utc": "2026-07-07T20:00:00Z",
+                        "home": "Winner Match 85",
+                        "away": "Winner Match 87",
+                        "stage": "Round of 16",
+                        "city": "Vancouver",
+                        "venueTimeZone": "America/Vancouver"
+            },
+            {
+                        "num": 97,
+                        "date": "2026-07-09",
+                        "easternTime": "16:00",
+                        "utc": "2026-07-09T20:00:00Z",
+                        "home": "Winner Match 89",
+                        "away": "Winner Match 90",
+                        "stage": "Quarter-final",
+                        "city": "Boston",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 98,
+                        "date": "2026-07-10",
+                        "easternTime": "15:00",
+                        "utc": "2026-07-10T19:00:00Z",
+                        "home": "Winner Match 93",
+                        "away": "Winner Match 94",
+                        "stage": "Quarter-final",
+                        "city": "Los Angeles",
+                        "venueTimeZone": "America/Los_Angeles"
+            },
+            {
+                        "num": 99,
+                        "date": "2026-07-11",
+                        "easternTime": "17:00",
+                        "utc": "2026-07-11T21:00:00Z",
+                        "home": "Winner Match 91",
+                        "away": "Winner Match 92",
+                        "stage": "Quarter-final",
+                        "city": "Miami",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 100,
+                        "date": "2026-07-11",
+                        "easternTime": "21:00",
+                        "utc": "2026-07-12T01:00:00Z",
+                        "home": "Winner Match 95",
+                        "away": "Winner Match 96",
+                        "stage": "Quarter-final",
+                        "city": "Kansas City",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 101,
+                        "date": "2026-07-14",
+                        "easternTime": "15:00",
+                        "utc": "2026-07-14T19:00:00Z",
+                        "home": "Winner Match 97",
+                        "away": "Winner Match 98",
+                        "stage": "Semi-final",
+                        "city": "Dallas",
+                        "venueTimeZone": "America/Chicago"
+            },
+            {
+                        "num": 102,
+                        "date": "2026-07-15",
+                        "easternTime": "15:00",
+                        "utc": "2026-07-15T19:00:00Z",
+                        "home": "Winner Match 99",
+                        "away": "Winner Match 100",
+                        "stage": "Semi-final",
+                        "city": "Atlanta",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 103,
+                        "date": "2026-07-18",
+                        "easternTime": "17:00",
+                        "utc": "2026-07-18T21:00:00Z",
+                        "home": "Loser Match 101",
+                        "away": "Loser Match 102",
+                        "stage": "Third Place",
+                        "city": "Miami",
+                        "venueTimeZone": "America/New_York"
+            },
+            {
+                        "num": 104,
+                        "date": "2026-07-19",
+                        "easternTime": "15:00",
+                        "utc": "2026-07-19T19:00:00Z",
+                        "home": "Winner Match 101",
+                        "away": "Winner Match 102",
+                        "stage": "Final",
+                        "city": "New Jersey",
+                        "venueTimeZone": "America/New_York"
+            }
+];
 
-function utcOffsetHours(date,tz){
-  try{
-    const p=partsInZone(date,tz);
-    const shownAsUtc=Date.UTC(p.y,p.m-1,p.d,p.h,p.min);
-    return Math.round((shownAsUtc-date.getTime())/3600000);
-  }catch(e){return 0}
-}
-function updateFlightInfoModal(from,to,totalKm,remainingKm,durationH,remainH,times){
-  const miles=Math.round(totalKm*0.621371);
-  const depUtc=scheduledDepartureUtc(from);
-  const arrUtc=new Date(depUtc.getTime()+durationH*3600*1000);
-  const fromTz=airportTimeZone(from), toTz=airportTimeZone(to);
-  const diff=utcOffsetHours(arrUtc,toTz)-utcOffsetHours(depUtc,fromTz);
-  const abs=Math.abs(diff);
-  const diffText = diff===0 ? "Same time zone" : `${to.c} is ${abs}h ${diff<0?"behind":"ahead"}`;
-  document.getElementById("modalFromFlag").innerText=from.flag;
-  document.getElementById("modalToFlag").innerText=to.flag;
-  document.getElementById("modalFrom").innerText=`${from.n} (${from.c})`;
-  document.getElementById("modalTo").innerText=`${to.n} (${to.c})`;
-  document.getElementById("modalFromAirport").innerText=from.a;
-  document.getElementById("modalToAirport").innerText=to.a;
-  document.getElementById("modalDeparture").innerText=times.dep.replace(from.c,"Local");
-  document.getElementById("modalArrival").innerText=times.arr.replace(to.c,"Local");
-  document.getElementById("modalDepartureDate").innerText=times.depDate;
-  document.getElementById("modalArrivalDate").innerText=times.arrDate;
-  document.getElementById("modalFlightTime").innerText=`${Math.floor(durationH)}h ${String(Math.round((durationH%1)*60)).padStart(2,"0")}m`;
-  document.getElementById("modalRemainingTime").innerText=`${Math.floor(remainH)}h ${String(Math.round((remainH%1)*60)).padStart(2,"0")}m`;
-  document.getElementById("modalDistanceKm").innerText=totalKm.toLocaleString()+" km";
-  document.getElementById("modalDistanceMiles").innerText=miles.toLocaleString()+" mi";
-  document.getElementById("modalTimeDiff").innerText=diffText;
-  document.getElementById("modalLocalNote").innerText="Departure + arrival";
-  document.getElementById("modalNote").innerText="Set the actual departure time above. Arrival updates using the destination airport local time and time-zone difference.";
-}
-function openFlightInfo(el){
-  document.querySelectorAll(".navbtn").forEach(b=>b.classList.remove("active"));
-  if(el) el.classList.add("active");
-  const from=byCode(document.getElementById("fromAirport").value);
-  setDepartureInputs(from);
-  document.getElementById("flightModal").classList.add("show");
-}
-function closeFlightInfo(){
-  document.getElementById("flightModal").classList.remove("show");
-}
+        const timeZones = [
+            ["auto", "Auto detect my time zone"],
+            ["Europe/London", "United Kingdom"],
+            ["Europe/Istanbul", "Türkiye"],
+            ["America/New_York", "New York / East USA"],
+            ["America/Los_Angeles", "Los Angeles / West USA"],
+            ["America/Toronto", "Toronto / Canada"],
+            ["America/Vancouver", "Vancouver / Canada"],
+            ["America/Mexico_City", "Mexico"],
+            ["Europe/Paris", "Europe / Paris"],
+            ["Asia/Dubai", "Dubai"],
+            ["Asia/Tokyo", "Japan"],
+            ["Australia/Sydney", "Australia Sydney"]
+        ];
 
-function startGPS(){if(!navigator.geolocation){alert("GPS not supported");return}navigator.geolocation.watchPosition(pos=>{document.getElementById("gpsText").innerText="LIVE";if(pos.coords.speed)document.getElementById("speed").innerText=Math.round(pos.coords.speed*3.6)+" km/h";if(pos.coords.altitude)document.getElementById("altitude").innerText=Math.round(pos.coords.altitude*3.28).toLocaleString()+" ft";if(pos.coords.heading)document.getElementById("heading").innerText=Math.round(pos.coords.heading)+"°"},()=>alert("Allow GPS permission"),{enableHighAccuracy:true,maximumAge:0,timeout:10000})}
-document.getElementById("flightModal").addEventListener("click",function(e){if(e.target===this)closeFlightInfo()});
-setInterval(()=>{progress+=.001;if(progress>.96)progress=.05;drawRoute()},3500);window.addEventListener("resize",()=>setTimeout(drawRoute,200));fillSelects();initMap();setTimeout(drawRoute,300);
-</script>
+        let currentMode = "country";
+        let currentStage = "all";
+        let scores = loadScores();
+
+        function loadScores() {
+            try {
+                return JSON.parse(localStorage.getItem("wc2026_scores") || "{}");
+            } catch (error) {
+                return {};
+            }
+        }
+
+        function saveScores() {
+            localStorage.setItem("wc2026_scores", JSON.stringify(scores));
+        }
+
+        function preferredCountry() {
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+
+            if (tz.includes("Istanbul")) return "Türkiye";
+            if (tz.includes("London")) return "England";
+            if (tz.includes("New_York") || tz.includes("Los_Angeles") || tz.includes("Chicago")) return "United States";
+            if (tz.includes("Toronto") || tz.includes("Vancouver")) return "Canada";
+            if (tz.includes("Mexico")) return "Mexico";
+            if (tz.includes("Tokyo")) return "Japan";
+            if (tz.includes("Sydney")) return "Australia";
+
+            return "England";
+        }
+
+        function init() {
+            const countrySelect = document.getElementById("countrySelect");
+
+            Object.keys(teamInfo).sort().forEach(function(name) {
+                const option = document.createElement("option");
+                option.value = name;
+                option.textContent = teamInfo[name].flag + " " + name;
+                countrySelect.appendChild(option);
+            });
+
+            countrySelect.value = preferredCountry();
+
+            const timezoneSelect = document.getElementById("timezoneSelect");
+
+            timeZones.forEach(function(row) {
+                const option = document.createElement("option");
+                option.value = row[0];
+                option.textContent = row[1];
+                timezoneSelect.appendChild(option);
+            });
+
+            timezoneSelect.addEventListener("change", function() {
+                currentMode === "country" ? showCountry() : showAll();
+            });
+
+            showCountry();
+            setInterval(updateCountdowns, 60000);
+        }
+
+        function getTimeZone() {
+            const selected = document.getElementById("timezoneSelect").value;
+
+            if (selected === "auto") {
+                return Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/London";
+            }
+
+            return selected;
+        }
+
+        function formatTime(utc, timezone) {
+            return new Date(utc).toLocaleString("en-GB", {
+                timeZone: timezone,
+                weekday: "short",
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
+
+        function countdown(utc) {
+            const diff = new Date(utc) - new Date();
+
+            if (diff <= 0) {
+                return "Started / finished";
+            }
+
+            const days = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+
+            return days + "d " + hours + "h " + minutes + "m";
+        }
+
+        function filterStage(list) {
+            if (currentStage === "group") {
+                return list.filter(match => match.stage.startsWith("Group"));
+            }
+
+            if (currentStage === "knockout") {
+                return list.filter(match => !match.stage.startsWith("Group"));
+            }
+
+            return list;
+        }
+
+        function flag(name) {
+            return teamInfo[name]?.flag || "⚽";
+        }
+
+        function render(list, title) {
+            const timezone = getTimeZone();
+
+            list = filterStage(list).sort(function(a, b) {
+                return new Date(a.utc) - new Date(b.utc);
+            });
+
+            document.getElementById("results").innerHTML = `
+                <div class="card">
+                    <h2>${title}</h2>
+                    <div class="meta">
+                        Time zone: <b>${timezone}</b> · Matches shown: <b>${list.length}</b>
+                    </div>
+                    ${list.map(match => matchCard(match, timezone)).join("")}
+                </div>
+            `;
+
+            updateCountdowns();
+        }
+
+        function matchCard(match, timezone) {
+            const saved = scores[match.num];
+            const homeScore = saved ? saved.home : "";
+            const awayScore = saved ? saved.away : "";
+            const isGroupMatch = match.stage.startsWith("Group");
+
+            return `
+                <div class="match">
+                    <div class="badge">${match.stage} · Match ${match.num}</div>
+
+                    <div class="teams">
+                        <span class="flag">${flag(match.home)}</span>${match.home}
+                        <span style="color:#9fb0cc"> vs </span>
+                        <span class="flag">${flag(match.away)}</span>${match.away}
+                    </div>
+
+                    <div class="meta">
+                        🏟 City: ${match.city}<br>
+                        🕒 Your time: <b>${formatTime(match.utc, timezone)}</b><br>
+                        📍 Stadium time: ${formatTime(match.utc, match.venueTimeZone)}<br>
+                        🇬🇧 UK time: ${formatTime(match.utc, "Europe/London")}<br>
+                        🌐 UTC: ${formatTime(match.utc, "UTC")}<br>
+                        ⏳ Countdown:
+                        <span class="countdown" data-utc="${match.utc}">
+                            ${countdown(match.utc)}
+                        </span><br>
+                        <button class="smallbtn" onclick='downloadICS(${JSON.stringify(match)})'>
+                            Add to Calendar
+                        </button>
+                    </div>
+
+                    ${isGroupMatch ? `
+                        <div class="scoreBox">
+                            <label>Enter score</label>
+                            <div class="scoreGrid">
+                                <div>${flag(match.home)} ${match.home}</div>
+                                <input id="homeScore-${match.num}" type="number" min="0" value="${homeScore}" placeholder="0">
+                                <input id="awayScore-${match.num}" type="number" min="0" value="${awayScore}" placeholder="0">
+                                <div>${flag(match.away)} ${match.away}</div>
+                            </div>
+
+                            <button class="smallbtn" onclick="saveMatchScore(${match.num})">
+                                Save Score
+                            </button>
+
+                            <button class="smallbtn danger" onclick="clearMatchScore(${match.num})">
+                                Clear
+                            </button>
+
+                            <button class="smallbtn secondary" onclick="showTables()">
+                                View Tables
+                            </button>
+
+                            ${saved ? `<div class="scoreSaved">Saved: ${match.home} ${saved.home} - ${saved.away} ${match.away}</div>` : ""}
+                        </div>
+                    ` : ""}
+                </div>
+            `;
+        }
+
+        function saveMatchScore(matchNumber) {
+            const homeInput = document.getElementById("homeScore-" + matchNumber);
+            const awayInput = document.getElementById("awayScore-" + matchNumber);
+
+            if (!homeInput || !awayInput) return;
+
+            if (homeInput.value === "" || awayInput.value === "") {
+                alert("Please enter both scores.");
+                return;
+            }
+
+            scores[matchNumber] = {
+                home: Number(homeInput.value),
+                away: Number(awayInput.value)
+            };
+
+            saveScores();
+
+            currentMode === "country" ? showCountry() : showAll();
+        }
+
+        function clearMatchScore(matchNumber) {
+            delete scores[matchNumber];
+            saveScores();
+
+            currentMode === "country" ? showCountry() : showAll();
+        }
+
+        function resetAllScores() {
+            if (!confirm("Clear all saved scores?")) return;
+
+            scores = {};
+            saveScores();
+            showTables();
+        }
+
+        function calculateTables() {
+            const tables = {};
+
+            Object.keys(groups).forEach(function(groupLetter) {
+                tables[groupLetter] = {};
+
+                groups[groupLetter].forEach(function(team) {
+                    tables[groupLetter][team[0]] = {
+                        team: team[0],
+                        flag: team[2],
+                        played: 0,
+                        won: 0,
+                        drawn: 0,
+                        lost: 0,
+                        goalsFor: 0,
+                        goalsAgainst: 0,
+                        goalDifference: 0,
+                        points: 0
+                    };
+                });
+            });
+
+            fixtures.forEach(function(match) {
+                if (!match.stage.startsWith("Group")) return;
+
+                const result = scores[match.num];
+                if (!result) return;
+
+                const groupLetter = match.stage.replace("Group ", "");
+                const home = tables[groupLetter][match.home];
+                const away = tables[groupLetter][match.away];
+
+                if (!home || !away) return;
+
+                const homeGoals = Number(result.home);
+                const awayGoals = Number(result.away);
+
+                home.played++;
+                away.played++;
+
+                home.goalsFor += homeGoals;
+                home.goalsAgainst += awayGoals;
+
+                away.goalsFor += awayGoals;
+                away.goalsAgainst += homeGoals;
+
+                if (homeGoals > awayGoals) {
+                    home.won++;
+                    away.lost++;
+                    home.points += 3;
+                } else if (homeGoals < awayGoals) {
+                    away.won++;
+                    home.lost++;
+                    away.points += 3;
+                } else {
+                    home.drawn++;
+                    away.drawn++;
+                    home.points++;
+                    away.points++;
+                }
+            });
+
+            Object.keys(tables).forEach(function(groupLetter) {
+                Object.values(tables[groupLetter]).forEach(function(team) {
+                    team.goalDifference = team.goalsFor - team.goalsAgainst;
+                });
+            });
+
+            return tables;
+        }
+
+        function showTables(button) {
+            document.querySelectorAll(".tab").forEach(function(tab) {
+                tab.classList.remove("active");
+            });
+
+            if (button) {
+                button.classList.add("active");
+            }
+
+            const tables = calculateTables();
+
+            const html = Object.keys(tables).map(function(groupLetter) {
+                const rows = Object.values(tables[groupLetter]).sort(function(a, b) {
+                    return b.points - a.points ||
+                        b.goalDifference - a.goalDifference ||
+                        b.goalsFor - a.goalsFor ||
+                        a.team.localeCompare(b.team);
+                });
+
+                return `
+                    <div class="groupBox">
+                        <h3>Group ${groupLetter}</h3>
+                        <div class="tableWrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Pos</th>
+                                        <th>Team</th>
+                                        <th>P</th>
+                                        <th>W</th>
+                                        <th>D</th>
+                                        <th>L</th>
+                                        <th>GF</th>
+                                        <th>GA</th>
+                                        <th>GD</th>
+                                        <th>Pts</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows.map(function(team, index) {
+                                        return `
+                                            <tr class="${index < 2 ? "qualify" : ""}">
+                                                <td>${index + 1}</td>
+                                                <td class="teamCell">${team.flag} ${team.team}</td>
+                                                <td>${team.played}</td>
+                                                <td>${team.won}</td>
+                                                <td>${team.drawn}</td>
+                                                <td>${team.lost}</td>
+                                                <td>${team.goalsFor}</td>
+                                                <td>${team.goalsAgainst}</td>
+                                                <td>${team.goalDifference}</td>
+                                                <td><b>${team.points}</b></td>
+                                            </tr>
+                                        `;
+                                    }).join("")}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            document.getElementById("results").innerHTML = `
+                <div class="card">
+                    <h2>Group Tables</h2>
+                    <div class="meta">
+                        Top two teams are highlighted. Tables update automatically when you save scores.
+                    </div>
+                    <button class="smallbtn danger" onclick="resetAllScores()">Reset All Scores</button>
+                    <div class="groupGrid" style="margin-top:12px">
+                        ${html}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateCountdowns() {
+            document.querySelectorAll(".countdown").forEach(function(element) {
+                element.textContent = countdown(element.dataset.utc);
+            });
+        }
+
+        function showCountry() {
+            currentMode = "country";
+
+            const country = document.getElementById("countrySelect").value;
+            const matches = fixtures.filter(function(match) {
+                return match.home === country || match.away === country;
+            });
+
+            render(matches, teamInfo[country].flag + " " + country + " Fixtures");
+        }
+
+        function showAll() {
+            currentMode = "all";
+            render(fixtures, "All Fixtures");
+        }
+
+        function setStage(stage, button) {
+            currentStage = stage;
+
+            document.querySelectorAll(".tab").forEach(function(tab) {
+                tab.classList.remove("active");
+            });
+
+            if (button) {
+                button.classList.add("active");
+            }
+
+            currentMode === "country" ? showCountry() : showAll();
+        }
+
+        function showGroups(button) {
+            document.querySelectorAll(".tab").forEach(function(tab) {
+                tab.classList.remove("active");
+            });
+
+            if (button) {
+                button.classList.add("active");
+            }
+
+            const html = Object.entries(groups).map(function(row) {
+                const groupLetter = row[0];
+                const teams = row[1];
+
+                const teamRows = teams.map(function(team) {
+                    return `
+                        <div class="teamPill">
+                            <span class="flag">${team[2]}</span>
+                            <b>${team[0]}</b>
+                            <span class="teamCode">${team[1]}</span>
+                        </div>
+                    `;
+                }).join("");
+
+                return `
+                    <div class="groupBox">
+                        <h3>Group ${groupLetter}</h3>
+                        ${teamRows}
+                    </div>
+                `;
+            }).join("");
+
+            document.getElementById("results").innerHTML = `
+                <div class="card">
+                    <h2>Groups A-L</h2>
+                    <div class="groupGrid">${html}</div>
+                </div>
+            `;
+        }
+
+        function downloadICS(match) {
+            const start = new Date(match.utc);
+            const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+
+            function stamp(date) {
+                return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+            }
+
+            const title = "World Cup 2026: " + match.home + " vs " + match.away;
+
+            const ics = [
+                "BEGIN:VCALENDAR",
+                "VERSION:2.0",
+                "PRODID:-//World Cup 2026 Fixtures//EN",
+                "BEGIN:VEVENT",
+                "UID:wc2026-" + match.num + "@fixtures",
+                "DTSTAMP:" + stamp(new Date()),
+                "DTSTART:" + stamp(start),
+                "DTEND:" + stamp(end),
+                "SUMMARY:" + title,
+                "LOCATION:" + match.city,
+                "DESCRIPTION:" + match.stage + " - Match " + match.num,
+                "END:VEVENT",
+                "END:VCALENDAR"
+            ].join("\\n");
+
+            const blob = new Blob([ics], { type: "text/calendar" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = "wc2026-match-" + match.num + ".ics";
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+    </script>
 </body>
 </html>
